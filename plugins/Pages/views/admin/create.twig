@@ -1,0 +1,21 @@
+{% extends 'admin/base_admin.twig' %}
+
+{% block title %}Nieuwe pagina{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <h1 class="h3 mb-4">Nieuwe pagina</h1>
+
+    <form method="post" action="/admin/pages">
+
+           {{ csrf() }}
+           
+        {% include 'admin/_form.twig' with {
+            page: null,
+            submit_label: 'Pagina opslaan'
+        } %}
+    </form>
+
+</div>
+{% endblock %}

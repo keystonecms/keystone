@@ -1,0 +1,84 @@
+{% extends "@pages/admin/layout.twig" %}
+
+{% block title %}
+    {{ page ? 'Pagina bewerken' : 'Nieuwe pagina' }}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="h3 mb-4">
+    {{ page ? 'Pagina bewerken' : 'Nieuwe pagina' }}
+</h1>
+
+<form method="post" action="/admin/pages/save" class="card">
+    <div class="card-body">
+
+        {{ csrf() }}
+
+        {% if page %}
+            <input type="hidden" name="id" value="{{ page.id }}">
+        {% endif %}
+
+        <div class="mb-3">
+            <label class="form-label">Titel</label>
+            <input
+                type="text"
+                name="title"
+                class="form-control"
+                value="{{ page.title ?? '' }}"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Slug</label>
+            <input
+                type="text"
+                name="slug"
+                class="form-control"
+                value="{{ page.slug ?? '' }}"
+            >
+            <div class="form-text">
+                Laat leeg om automatisch te genereren.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Inhoud</label>
+            <textarea
+                name="content"
+                rows="10"
+                class="form-control"
+            >{{ page.content ?? '' }}</textarea>
+        </div>
+
+<div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select">
+        <option value="draft"
+            {{ page and page.status() == 'draft' ? 'selected' }}>
+            Concept
+        </option>
+        <option value="published"
+            {{ page and page.status() == 'published' ? 'selected' }}>
+            Gepubliceerd
+        </option>
+    </select>
+</div>
+
+
+    </div>
+
+    <div class="card-footer d-flex justify-content-between">
+        <a href="/admin/pages" class="btn btn-link">
+            Terug
+        </a>
+
+        <button class="btn btn-success">
+            Opslaan
+        </button>
+    </div>
+</form>
+
+{% endblock %}
+

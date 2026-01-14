@@ -1,0 +1,35 @@
+/* Keystone CMS – Admin styles */
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* Card spacing */
+.card {
+    border-radius: 0.5rem;
+}
+
+/* Login page tweaks */
+body.bg-light {
+    background-color: #f1f3f5;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+}

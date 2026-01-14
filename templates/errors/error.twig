@@ -1,0 +1,24 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Fout {{ status }}{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <h1>{{ status }}</h1>
+
+    <p class="error-message">
+        {{ message }}
+    </p>
+
+    <p class="error-code">
+        Referentiecode: <strong>{{ code }}</strong>
+    </p>
+
+    {% if debug %}
+        <hr>
+        <pre>{{ debug }}</pre>
+    {% endif %}
+
+    <a href="/" class="btn btn-primary">Terug naar homepage</a>
+</div>
+{% endblock %}
