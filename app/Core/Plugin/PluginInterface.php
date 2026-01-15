@@ -17,6 +17,11 @@ interface PluginInterface
     ): void;
 
     public function getName(): string;
+
+    public function getVersion(): string;
+
+    public function getDescription(): string;
+
 }
 
 

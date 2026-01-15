@@ -1,0 +1,91 @@
+<form id="form-seo-edit"
+      method="post"
+      action="{{ url }}/admin/seo/page/{{ page.id }}"
+      data-reload="false">
+
+        <div class="card-body">
+
+           {{ csrf() }}
+
+            <div class="mb-3">
+                <label for="seo-title" class="form-label">
+                    SEO title
+                </label>
+                <input
+                    id="seo-title"
+                    type="text"
+                    name="title"
+                    class="form-control"
+                    value="{{ seo.title }}"
+                    maxlength="60"
+                >
+                <div class="form-text">
+                    Maximaal 60 tekens.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="seo-description" class="form-label">
+                    Meta description
+                </label>
+                <textarea
+                    id="seo-description"
+                    name="description"
+                    class="form-control"
+                    rows="3"
+                    maxlength="160"
+                >{{ seo.description }}</textarea>
+                <div class="form-text">
+                    Maximaal 160 tekens.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="seo-canonical" class="form-label">
+                    Canonical URL
+                </label>
+                <input
+                    id="seo-canonical"
+                    type="url"
+                    name="canonical"
+                    class="form-control"
+                    value="{{ seo.canonical }}"
+                >
+                <div class="form-text">
+                Automatisch gegenereerd.
+                </div>
+
+            </div>
+
+            <div class="form-check mb-3">
+                <input
+                    id="seo-noindex"
+                    class="form-check-input"
+                    type="checkbox"
+                    name="no_index"
+                    {% if seo.noIndex %}checked{% endif %}
+                >
+                <label class="form-check-label" for="seo-noindex">
+                    No index
+                </label>
+                <div class="form-text">
+                    Voorkom dat deze pagina wordt geïndexeerd door zoekmachines.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <a
+                href="{{ base_path }}/admin/pages"
+                class="btn btn-outline-secondary"
+            >
+                Terug
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                Opslaan
+            </button>
+        </div>
+    </form>
+

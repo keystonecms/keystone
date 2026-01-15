@@ -1,0 +1,108 @@
+{% block content %}
+<div class="container-fluid">
+
+    <h1 class="h4 mb-4">Interne links</h1>
+
+    <form method="post" class="card mb-4">
+        <div class="card-body">
+
+            {{ csrf() }}
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label">Doel type</label>
+                    <select name="to_type" class="form-select">
+                        <option value="page">Pagina</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Doel ID</label>
+                    <input
+                        type="number"
+                        name="to_id"
+                        class="form-control"
+                        required
+                    >
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Anchor text</label>
+                    <input
+                        type="text"
+                        name="anchor_text"
+                        class="form-control"
+                        required
+                    >
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="nofollow"
+                            id="nofollow"
+                        >
+                        <label class="form-check-label" for="nofollow">
+                            Nofollow
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer text-end">
+            <button class="btn btn-primary">
+                Link toevoegen
+            </button>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Van</th>
+                        <th>Naar</th>
+                        <th>Anchor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for link in links %}
+                    <tr>
+                        <td>{{ subject.type }} #{{ subject.id }}</td>
+                        <td>{{ link.to.type }} #{{ link.to.id }}</td>
+                        <td>{{ link.anchorText }}</td>
+                        <td class="text-end">
+                            <form method="post"
+                                  action="/admin/internal-links/{{ subject.type }}/{{ subject.id }}/delete">
+                                <input type="hidden" name="_csrf" value="{{ csrf }}">
+                                <input type="hidden" name="to_type" value="{{ link.to.type }}">
+                                <input type="hidden" name="to_id" value="{{ link.to.id }}">
+                                <input type="hidden" name="anchor_text" value="{{ link.anchorText }}">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Verwijderen
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-muted text-center">
+                            Geen interne links.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

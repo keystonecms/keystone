@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use DI\ContainerBuilder;
+use function DI\factory;
 use function DI\autowire;
 use function DI\create;
 use Keystone\Security\CsrfToken;
@@ -30,6 +31,8 @@ use Keystone\Domain\User\CurrentUser;
 use Keystone\Http\Middleware\AuthMiddleware;
 use Keystone\Core\Plugin\PluginLoader;
 use Keystone\Core\Auth\Authorizer;
+use Keystone\Core\Plugin\PluginRegistry;
+
 
 return [
 
@@ -68,9 +71,19 @@ return [
         }
 
         return $twig;
-    },
+    }, 
+    CurrentUser::class => factory(function ($c) {
+      error_log('CurrentUser factory called');
+    if (!isset($_SESSION['user_id'])) {
+        return new CurrentUser(null);
+    }
 
+      $userRepository = $c->get(UserRepositoryInterface::class);
 
+      $user = $userRepository->findById((int) $_SESSION['user_id']);
+
+    return new CurrentUser($user);
+}),
     /**
      * Logger interface to file for now
      */
@@ -107,7 +120,6 @@ return [
     PasswordHasher::class => DI\create(),
 
     PageRepositoryInterface::class => DI\autowire(PageRepository::class),
-    UserRepositoryInterface::class => DI\autowire(UserRepository::class),
 
     PolicyResolver::class => function () {
         $resolver = new PolicyResolver();
@@ -125,7 +137,8 @@ return [
     Authorizer::class => function () {
     return new Authorizer();
     },
-
+    
+    PluginRegistry::class => DI\create(),
     // Authorizer::class => autowire(),
     AuthMiddleware::class => autowire(),
     CsrfToken::class => create(),

@@ -19,6 +19,17 @@ return new class implements PluginInterface {
         return 'Pages';
     }
 
+     public function getVersion(): string {
+        return 'v1.0.0';
+    }
+
+    public function getDescription(): string
+    {
+        return 'Cores pages app description';
+    }
+
+
+
 public function register(ContainerInterface $container): void {
     $container->set(
         PageRepositoryInterface::class,

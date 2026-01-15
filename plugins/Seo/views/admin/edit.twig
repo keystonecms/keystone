@@ -1,0 +1,60 @@
+{% extends '@pages/admin/layout.twig' %}
+
+{% block content %}
+
+{% include '@pages/admin/_page_subnav.twig' with {
+  page: page,
+  active: 'seo'
+} %}
+
+<form id="form-seo-edit"
+      method="post"
+      action="{{ url }}/admin/seo/page/{{ page.id }}"
+      data-reload="false">
+
+      {{ csrf() }}
+
+  <div class="card-body">
+
+    <input type="hidden" name="_csrf" value="{{ csrf }}">
+
+    <div class="mb-3">
+      <label class="form-label">SEO titel</label>
+      <input
+        type="text"
+        name="seo_title"
+        class="form-control"
+        value="{{ seo.title }}"
+      >
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Meta description</label>
+      <textarea
+        name="seo_description"
+        class="form-control"
+        rows="3"
+      >{{ seo.description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Canonical URL</label>
+      <input
+        type="url"
+        name="canonical"
+        class="form-control"
+        value="{{ seo.canonical }}"
+        readonly
+      >
+    </div>
+
+  </div>
+
+  <div class="card-footer text-end">
+    <button class="btn btn-primary">
+      SEO opslaan
+    </button>
+  </div>
+</form>
+
+{% endblock %}

@@ -6,9 +6,20 @@ namespace Keystone\Plugins\Pages\Domain;
 
 use Keystone\Core\Auth\PolicyInterface;
 use Keystone\Domain\User\User;
+use Keystone\Plugins\Pages\Domain\Page;
 
 final class PagePolicy implements PolicyInterface
 {
+
+    public function mayView(Page $page): bool {
+        return $page->getStatus() === 'published';
+    }
+
+    public function mayBeHomepage(Page $page): bool
+    {
+        return $page->status() === 'published';
+    }
+
     public function allows(
         User $user,
         string $ability,

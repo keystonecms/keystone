@@ -152,14 +152,7 @@ $errorMiddleware->setDefaultErrorHandler(
 // --------------------------------------------------
 // 8. CORE ROUTES (meest specifiek)
 // --------------------------------------------------
-
-// Admin dashboard redirect (optioneel)
-$app->get('/admin', function ($request, $response) {
-    return $response
-        ->withHeader('Location', '/admin/pages')
-        ->withStatus(302);
-});
-
+require __DIR__ . '/twig.php';
 // Auth routes (login/logout)
 require __DIR__ . '/../app/Http/Routes/auth.php';
 
@@ -178,6 +171,7 @@ $container->get(\Keystone\Core\Plugin\PluginLoader::class)->load($app);
 // --------------------------------------------------
 // 11. CATCH-ALL ROUTES (ALTIJD LAATST)
 // --------------------------------------------------
+require __DIR__ . '/../app/Http/Routes/admin.php';
 require __DIR__ . '/../app/Http/Routes/public.php';
 // --------------------------------------------------
 // 12. Run application

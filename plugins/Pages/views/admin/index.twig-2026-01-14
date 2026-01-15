@@ -1,0 +1,73 @@
+{% extends "@pages/admin/layout.twig" %}
+
+{% block title %}Pagina’s{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Pagina’s</h1>
+
+    <a href="/admin/pages/create" class="btn btn-primary">
+        Nieuwe pagina
+    </a>
+</div>
+
+{% if pages is empty %}
+    <div class="alert alert-info">
+        Er zijn nog geen pagina’s aangemaakt.
+    </div>
+{% else %}
+    <ul class="list-group">
+        {% for page in pages %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ page.title }}</strong><br>
+                    <small class="text-muted">/{{ page.slug }}</small>
+                </div>
+
+                
+{% if page.isPublished() %}
+    <span class="badge bg-success">Published</span>
+{% else %}
+    <span class="badge bg-secondary">Draft</span>
+{% endif %}
+
+{% include "@pages/admin/actions.twig" with { page: page } %}
+
+<div class="btn-group btn-group-sm">
+
+    <a
+        href="/{{ page.slug }}"
+        class="btn btn-outline-secondary"
+        target="_blank"
+    >
+        Bekijken
+    </a>
+
+    <a
+        href="/admin/pages/{{ page.id }}/edit"
+        class="btn btn-outline-primary"
+    >
+        Bewerken
+    </a>
+
+    <form
+        method="post"
+        action="/admin/pages/{{ page.id }}/delete"
+        onsubmit="return confirm('Weet je zeker dat je deze pagina wilt verwijderen?');"
+    >
+        {{ csrf() }}
+
+        <button class="btn btn-outline-danger">
+            Verwijderen
+        </button>
+    </form>
+
+</div>
+
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

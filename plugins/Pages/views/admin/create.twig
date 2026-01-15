@@ -1,21 +1,117 @@
-{% extends 'admin/base_admin.twig' %}
+{% extends "@pages/admin/layout.twig" %}
 
-{% block title %}Nieuwe pagina{% endblock %}
+{% block title %}Create page – Keystone{% endblock %}
+
+{% block styles %}
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<style>
+    .ql-editor {
+        min-height: 320px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<form id="form-page-edit"
+      method="post"
+      action="/admin/pages/create"
+      data-reload="false">
 
-    <h1 class="h3 mb-4">Nieuwe pagina</h1>
+    {{ csrf() }}
 
-    <form method="post" action="/admin/pages">
+    <div class="alert alert-success d-none"></div>
+    <div class="alert alert-danger d-none"></div>
 
-           {{ csrf() }}
-           
-        {% include 'admin/_form.twig' with {
-            page: null,
-            submit_label: 'Pagina opslaan'
-        } %}
-    </form>
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input name="title"
+               class="form-control"
+               value=""
+               required>
+    </div>
 
+        <div class="mb-3">
+        <label class="form-label">Slug</label>
+        <input name="slug"
+               class="form-control"
+               value="">
+    </div>
+    <div class="mb-3">
+    <label class="form-label">Template</label>
+    <select name="template" class="form-select">
+        <option value="default">Default</option>
+        <option value="landing">Landing</option>
+        <option value="homepage">Homepage</option>
+        <option value="full-width">Full width</option>
+    </select>
 </div>
+
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+
+        {# Quill mount #}
+        <div id="editor">
+
+        </div>
+
+        {# hidden textarea for AJAX serialize #}
+        <textarea name="content" class="d-none"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Save
+    </button>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/multiform-ajax.js"></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<script>
+(function () {
+
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ header: [2, 3, false] }],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['blockquote'],
+                ['image'],
+                ['clean']
+            ]
+        }
+    });
+
+    /* Media picker integration */
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', function () {
+        window.open(
+            '/admin/media?picker=1',
+            'mediaPicker',
+            'width=900,height=600'
+        );
+    });
+
+    /* sync quill → textarea before AJAX submit */
+    $('form[id*=form]').on('submit', function () {
+        $('textarea[name=content]').val(
+            quill.root.innerHTML
+        );
+    });
+
+    /* exposed for media picker */
+    window.insertImage = function (url) {
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, 'image', url);
+        quill.formatText(range.index, 1, 'alt', '');
+        quill.setSelection(range.index + 1);
+    };
+
+})();
+</script>
 {% endblock %}

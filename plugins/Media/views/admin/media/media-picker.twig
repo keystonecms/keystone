@@ -1,0 +1,25 @@
+{% extends "@pages/admin/layout.twig" %}
+
+{% block title %}Select media{% endblock %}
+
+{% block header %}
+<h2>Select media</h2>
+{% endblock %}
+
+{% block content %}
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1rem;">
+{% for item in media %}
+    <div style="border:1px solid var(--border); padding:0.5rem;">
+        {% if item.mime_type starts with 'image/' %}
+            <img src="{{ item.path }}" style="max-width:100%;">
+        {% endif %}
+
+        <form method="post"
+              action="/admin/pages/{{ pageId }}/media/{{ item.id }}">
+ {{ csrf() }}
+            <button type="submit">Use</button>
+        </form>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

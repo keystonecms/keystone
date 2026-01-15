@@ -11,17 +11,76 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Keystone\Core\Http\Exception\ForbiddenException;
 use Keystone\Plugins\Pages\Domain\PageService;
+use Keystone\Http\Controllers\BaseController;
+use Keystone\Security\CsrfToken;
 
-final class PageController {
+use Keystone\Plugins\InternalLinks\Domain\InternalLinkService;
+use Keystone\Plugins\InternalLinks\Domain\LinkSubject;
+
+final class PageController extends BaseController {
 
     public function __construct(
         private PageService $pages,
         private CurrentUser $currentUser,
         private Authorizer $auth,
+        private CsrfToken $token,
+        private InternalLinkService $internalLinks,
         private Twig $view
     ) {}
 
-    public function index(
+public function schedule(
+    ServerRequestInterface $request,
+    ResponseInterface $response,
+    array $args
+): ResponseInterface {
+
+    $data = $request->getParsedBody();
+
+    $this->pages->schedulePublish(
+        (int) $args['id'],
+        (int) $data['version_id'],
+        new \DateTimeImmutable($data['publish_at'])
+    );
+
+    return $this->json($response, [
+        'status'  => 'success',
+        'message' => 'Publish scheduled'
+    ]);
+}
+
+
+
+public function publish(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+
+        $data = $request->getParsedBody();
+
+        $this->pages->publish((int) $args['id'], (int) $data['version_id']);
+        return $response->withHeader('Location', '/admin/pages')->withStatus(302);
+    }
+
+public function unpublish(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+        $this->pages->unpublish((int) $args['id']);
+        return $response->withHeader('Location', '/admin/pages')->withStatus(302);
+    }
+
+public function setHomepage(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+        $this->pages->setHomepage((int) $args['id']);
+        return $response->withHeader('Location', '/admin/pages')->withStatus(302);
+    }
+
+public function index(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $args = []
@@ -41,7 +100,20 @@ final class PageController {
         );
     }
 
-    public function form(
+    public function create(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args = []
+    ): ResponseInterface {
+
+            return $this->view->render(
+            $response,
+            '@pages/admin/create.twig'
+            );
+    }
+
+
+    public function edit(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $args = []
@@ -49,15 +121,18 @@ final class PageController {
         $page = isset($args['id'])
 
 
-        
+
             ? $this->pages->findById((int) $args['id'])
             : null;
 
+            $media = $this->pages->media((int) $args['id']);
+
             return $this->view->render(
             $response,
-            '@pages/admin/form.twig',
+            '@pages/admin/edit.twig',
             [
                 'page' => $page,
+                'media' => $media
             ]
         );
     }
@@ -77,23 +152,70 @@ public function delete(
         ->withStatus(302);
 }
 
+public function autosave(
+    ServerRequestInterface $request,
+    ResponseInterface $response,
+    array $args
+): ResponseInterface {
 
-    public function save(
-        ServerRequestInterface $request,
-        ResponseInterface $response
-    ): ResponseInterface {
-        $data = $request->getParsedBody();
+    $data = $request->getParsedBody();
 
+    $versionId = $this->pages->autosave(
+        (int) $args['id'],
+        trim($data['title'] ?? ''),
+        trim($data['slug'] ?? ''),
+        $data['content'] ?? '',
+        $data['template']
+    );
+
+    return $this->json($response, [
+        'status'    => 'success',
+        'versionId' => $versionId,
+        'savedAt'   => date('H:i'),
+        'csrfToken' => htmlspecialchars($this->token->generate(), ENT_QUOTES),
+    ]);
+}
+
+
+
+public function save(
+    ServerRequestInterface $request,
+    ResponseInterface $response,
+    array $args
+): ResponseInterface {
+
+    $data = $request->getParsedBody();
+
+    try {
         $this->pages->save([
-            'id'        => $data['id'] ?? null,
-            'title'     => $data['title'],
-            'slug'      => $data['slug'],
-            'content'   => $data['content'],
-            'published' => isset($data['published']) ? 1 : 0,
+           'id' => (int) $args['id'],
+           'title' =>  trim($data['title'] ?? ''),
+           'slug' =>  trim($data['slug'] ?? ''),
+           'status' => $data['status'] ?? 'draft',
+           'authorId' => $this->currentUser->user()->id(),
+           'template' => $data['template'],
+           'content' => $data['content'] ?? ''
         ]);
 
-        return $response
-            ->withHeader('Location', '/admin/pages')
-            ->withStatus(302);
+    $this->internalLinks->syncLinksForSubject(
+            new LinkSubject('page', (int) $args['id']),
+            $data['internal_links'] ?? []
+        );
+
+
+        return $this->json($response, [
+            'status'  => 'success',
+            'message' => 'Page saved',
+            'csrfToken' => htmlspecialchars($this->token->generate(), ENT_QUOTES),
+        ]);
+
+    } catch (\RuntimeException $e) {
+        return $this->json($response, [
+            'status'  => 'error',
+            'message' => $e->getMessage()
+        ]);
     }
+}
+
+
 }

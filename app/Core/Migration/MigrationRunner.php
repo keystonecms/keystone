@@ -11,12 +11,15 @@ final class MigrationRunner {
     public function __construct(
         private PDO $pdo,
         private MigrationRepository $repository,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private array $executed = []
     ) {}
 
-    /**
-     * @param MigrationInterface[] $migrations
-     */
+    public function executed(): array {
+        return $this->executed;
+    }
+
+
     public function run(array $migrations): void {
         foreach ($migrations as $migration) {
 
@@ -33,7 +36,9 @@ final class MigrationRunner {
             ]);
 
             $migration->up($this->pdo);
-
+            
+            $this->executed[] = get_class($migration);
+            
             $this->repository->markAsRun($plugin, $version);
         }
     }

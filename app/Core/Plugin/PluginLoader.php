@@ -34,20 +34,29 @@ final class PluginLoader {
                 );
             }
 
-            // 1️⃣ Services / DI
+
+            // registreren
+            $this->container
+                ->get(PluginRegistry::class)
+                ->add($plugin);
+
+            // Services / DI
             $plugin->register($this->container);
 
-            // 2️⃣ Routes / middleware
+            // Routes / middleware
             $plugin->boot($app, $this->container);
 
-            // 3️⃣ Migrations (DIT IS DE NIEUWE STAP)
+            // Migrations (DIT IS DE NIEUWE STAP)
             $this->loadAndRunMigrations(
                 $plugin->getName(),
                 dirname($pluginFile)
             );
 
             $this->logger->info('Plugin loaded', [
-                'plugin' => $plugin->getName(),
+                 'plugin' => $plugin->getName(),
+                 'version'     => $plugin->getVersion(),
+                 'description' => $plugin->getDescription(),
+
             ]);
         }
     }

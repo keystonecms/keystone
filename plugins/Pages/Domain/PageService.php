@@ -6,35 +6,344 @@ namespace Keystone\Plugins\Pages\Domain;
 
 use Keystone\Domain\User\User;
 use Keystone\Plugins\Pages\Infrastructure\Persistence\PageRepository;
+use Keystone\Plugins\Pages\Infrastructure\Persistence\PageVersionRepository;
+use Keystone\Plugins\Pages\Infrastructure\Persistence\PagePublicationRepository;
 use Keystone\Plugins\Pages\Domain\Page;
+use Keystone\Plugins\Pages\Domain\PagePolicy;
+use Keystone\Domain\User\CurrentUser;
+
 
 final class PageService {
-    public function __construct(
-        private PageRepository $pages
-    ) {}
 
-    public function all(): array
- {
-        return $this->pages->all();
+private const ALLOWED_TEMPLATES = [
+    'default',
+    'landing',
+    'homepage',
+    'full-width',
+];
+
+
+    public function __construct(
+        private PageRepository $repository,
+        private PageVersionRepository $version,
+        private PagePolicy $policy,
+        private PagePublicationRepository $publications,
+        private CurrentUser $currentUser,
+        ) {}
+
+
+public function versions(int $pageId): array
+{
+    return $this->version->allForPage($pageId);
+}
+
+public function revertToVersion(int $pageId, int $versionId): void
+{
+    $version = $this->version->find($versionId);
+
+    if (!$version || $version['page_id'] !== $pageId) {
+        throw new RuntimeException('Invalid version');
+    }
+
+    // Revert = nieuwe versie aanmaken
+    $this->repository->create(
+        $pageId,
+        $version['title'],
+        $version['content'],
+        null
+    );
+}
+
+public function executeScheduledPublications(): void {
+    foreach ($this->publications->due() as $job) {
+
+        $this->pages->publish(
+            (int) $job['page_id'],
+            (int) $job['version_id']
+        );
+
+        $this->publications->markExecuted(
+            (int) $job['id']
+        );
+    }
+}
+
+
+public function delete(
+       int $pageId
+
+): void {
+
+$this->repository->delete($pageId);
+
+}
+
+public function schedulePublish(
+    int $pageId,
+    int $versionId,
+    \DateTimeInterface $publishAt
+): void {
+
+    $version = $this->version->find($versionId);
+
+    if (!$version || $version['page_id'] !== $pageId) {
+        throw new RuntimeException('Invalid version');
+    }
+
+    if ($publishAt <= new \DateTimeImmutable()) {
+        throw new RuntimeException('Publish date must be in the future');
+    }
+
+    $this->publications->schedule(
+        $pageId,
+        $versionId,
+        $publishAt,
+        $this->currentUserId()
+    );
+}
+
+
+public function detachMedia(int $pageId, int $mediaId): void {
+    $page = $this->repository->findById($pageId);
+
+    if (!$page) {
+        throw new RuntimeException('Page not found');
+    }
+
+    $this->repository->detachMedia($pageId, $mediaId);
+}
+
+public function attachMedia(int $pageId, int $mediaId): void {
+    $page = $this->repository->findById($pageId);
+
+    if (!$page) {
+        throw new RuntimeException('Page not found');
+    }
+
+    $this->repository->attachMedia($pageId, $mediaId);
+}
+
+public function media(int $pageId): array {
+    return $this->repository->mediaForPage($pageId);
+}
+
+public function version(int $pageId, int $versionId): ?array
+{
+    $version = $this->version->find($versionId);
+
+    if (!$version || $version['page_id'] !== $pageId) {
+        return null;
+    }
+
+    return $version;
+}
+
+public function saveDraft(
+    int $pageId,
+    string $title,
+    string $slug,
+    string $content,
+    string $template
+): int {
+
+    $content = $this->sanitizeHtml($content);
+
+    $versionId = $this->versions->create(
+        $pageId,
+        $title,
+        $content,
+        $template,
+        $this->currentUserId()
+    );
+
+    // snapshot voor editor
+    $this->repository->update(
+        $pageId,
+        $title,
+        $slug,
+        $content,
+        $template
+    );
+
+    return $versionId;
+}
+
+public function cleanupVersions(
+    int $pageId,
+    int $keepManual = 10,
+    int $keepAutosave = 5
+): int {
+
+    $page = $this->repository->findById($pageId);
+
+    if (!$page) {
+        return 0;
+    }
+
+    $publishedId = (int) ($page->published_version_id() ?? 0);
+
+    $versions = $this->version->allForPage($pageId);
+
+    $manual = [];
+    $autosave = [];
+
+    foreach ($versions as $v) {
+
+        if ((int) $v['id'] === $publishedId) {
+            continue;
+        }
+
+        if (!empty($v['is_initial'])) {
+            continue;
+        }
+
+        if ($v['is_autosave']) {
+            $autosave[] = $v;
+        } else {
+            $manual[] = $v;
+        }
+    }
+
+    // sort newest first
+    usort($manual, fn($a, $b) =>
+        strtotime($b['created_at']) <=> strtotime($a['created_at'])
+    );
+    usort($autosave, fn($a, $b) =>
+        strtotime($b['created_at']) <=> strtotime($a['created_at'])
+    );
+
+    $toDelete = array_merge(
+        array_slice($manual, $keepManual),
+        array_slice($autosave, $keepAutosave)
+    );
+
+    foreach ($toDelete as $v) {
+        $this->version->delete((int) $v['id']);
+    }
+
+    return count($toDelete);
+}
+
+
+public function autosave(
+    int $pageId,
+    string $title,
+    string $slug,
+    string $content,
+    string $template,
+): int {
+
+    $content = $this->sanitizeHtml($content);
+
+    // autosave = versie, maar géén statuswijziging
+    $versionId = $this->version->create(
+        $pageId,
+        $title,
+        $content,
+        $this->currentUserId(),
+        true // autosave
+    );
+
+    // snapshot wél updaten (zodat editor synchroon blijft)
+     $this->repository->update(
+        $pageId,
+        $title,
+        $slug,
+        $content,
+        $template
+    );
+
+    /**
+     * oude versies verwijderen
+     */
+    $this->cleanupVersions($pageId);
+    return $versionId;
+}
+
+public function setHomepage(int $pageId): void {
+        $page = $this->repository->findById($pageId);
+
+        if (!$page) {
+            throw new RuntimeException('Page not found');
+        }
+
+        if (!$this->policy->mayBeHomepage($page)) {
+            throw new RuntimeException(
+                'Only published pages can be set as homepage'
+            );
+        }
+
+        $this->repository->unsetHomepage();
+        $this->repository->setHomepage($pageId);
+    }
+
+public function publish(
+    int $pageId,
+    int $versionId
+): void {
+
+    $version = $this->version->find($versionId);
+
+    if (!$version || $version['page_id'] !== $pageId) {
+        throw new RuntimeException('Invalid version');
+    }
+
+    $this->repository->publish(
+        $pageId,
+        $versionId
+    );
+}
+
+
+    public function unpublish(int $pageId): void {
+        $page = $this->repository->findById($pageId);
+
+        if (!$page) {
+            throw new RuntimeException('Page not found');
+        }
+
+        // safety: homepage kan niet unpublished zijn
+        if ($page->isHomepage()) {
+            $this->repository->unsetHomepage();
+        }
+
+        $this->repository->updateStatus($pageId, 'draft');
+    }
+
+public function all(): array {
+        return $this->repository->all();
     }
 
     public function findBySlug(string $slug): ?Page {
-        return $this->pages->findBySlug($slug);
+        return $this->repository->findBySlug($slug);
     }
 
+   public function getHomepage(): ?Page
+    {
+        return $this->repository->findHomepage();
+    }
+
+   private function updatePageVersion(int $page_id, int $version_id) {
+       return $this->repository->updatePageVersion($page_id, $version_id);
+      }
+
    public function findById(int $id): ?Page {
-        return $this->pages->findById($id);
+        return $this->repository->findById($id);
     }
 
     public function create(array $data, User $user): Page {
         // hier later policies / logging / events
-        return $this->pages->create($data, $user);
+        return $this->repository->create($data, $user);
     }
 
     public function save(array $data): void {
         $title   = trim($data['title'] ?? '');
         $content = $data['content'] ?? '';
         $slug    = trim($data['slug'] ?? '');
+        $status = $data['status'];
+        $authorId = $data['authorId'] ?? '';
+        $template = $data['template'];
+
 
         if ($slug === '') {
             $slug = $this->slugify($title);
@@ -42,21 +351,64 @@ final class PageService {
             $slug = $this->slugify($slug);
         }
 
-        if (!empty($data['id'])) {
-            $this->pages->update(
+    if ($title === '') {
+        throw new RuntimeException('Title is required');
+    }
+
+    $content = $this->sanitizeHtml($content);
+
+     $this->assertValidTemplate($template);
+
+    if (!empty($data['id'])) {
+            $this->repository->update(
                 (int) $data['id'],
                 $title,
                 $slug,
-                $content
+                $content,
+                $template
             );
         } else {
-            $this->pages->create(
+          $pageId = $this->repository->create(
                 $title,
                 $slug,
-                $content
+                $content,
+                $status,
+                $authorId,
+                $template
             );
         }
+    // 2️⃣ create new version (ALTIJD)
+    $versionId = $this->version->create(
+        $pageId ?? $data['id'],
+        $title,
+        $content,
+        $this->currentUserId()
+    );
+    $this->updatePageVersion($pageId ?? $data['id'], $versionId);
+}
+
+private function assertValidTemplate(string $template): void {
+    if (!in_array($template, self::ALLOWED_TEMPLATES, true)) {
+        throw new RuntimeException('Invalid page template');
     }
+}
+
+
+private function currentUserId(): ?int
+{
+    return $this->currentUser->isAuthenticated()
+        ? $this->currentUser->user()->id()
+        : null;
+}
+
+private function sanitizeHtml(string $html): string
+{
+    return strip_tags(
+        $html,
+        '<p><br><strong><em><u><h2><h3><ul><ol><li><blockquote><img>'
+    );
+}
+
 
     /**
      * Maak een nette URL-slug

@@ -11,6 +11,16 @@ return new class implements PluginInterface {
         return 'HelloWorld';
     }
 
+    public function getVersion(): string
+    {
+        return 'v1.0.0';
+    }
+
+    public function getDescription(): string
+    {
+        return 'Hello World app description';
+    }
+
     public function register(ContainerInterface $container): void {
         // services registreren
     }

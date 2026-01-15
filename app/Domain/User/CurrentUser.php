@@ -17,6 +17,12 @@ final class CurrentUser {
          return $this->user;
     }
 
+    
+    public function id(): ?User
+    {
+         return $this->user->id();
+    }
+
     public function isAuthenticated(): bool
     {
         return $this->user !== null;

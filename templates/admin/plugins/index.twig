@@ -1,0 +1,35 @@
+{% extends "@pages/admin/layout.twig" %}
+
+{% block header %} <h2>Overzicht plugins</h2> {% endblock %}
+
+{% block title %}
+Overzicht plugins
+{% endblock %}
+
+{% block content %}
+
+<h1 class="h3 mb-4">
+    Overzicht plugins
+</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Plugin</th>
+            <th>Version</th>
+            <th>Description</th>
+            <th>Migrations</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for plugin in plugins %}
+        <tr>
+            <td>{{ plugin.name }}</td>
+            <td>{{ plugin.version }}</td>
+            <td>{{ plugin.description }}</td>
+            <td>✔</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
