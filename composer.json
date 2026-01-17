@@ -21,7 +21,6 @@
     "slim/psr7": "^1.8",
     "vlucas/phpdotenv": "^5.6",
     "php-di/php-di": "^7.1",
-    "symfony/var-dumper": "^8.0",
     "monolog/monolog": "^3.10",
     "phpmailer/phpmailer": "^7.0",
     "pragmarx/google2fa": "^9.0",
