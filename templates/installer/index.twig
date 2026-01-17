@@ -1,0 +1,25 @@
+{% extends "base.twig" %}
+
+{% block content %}
+<h1>Keystone CMS installatie</h1>
+
+<div id="installer">
+    <form data-ajax action="/install/check">
+        <button>Controleer systeem</button>
+    </form>
+
+    <form data-ajax action="/install/database" hidden>
+        <input name="db_host" placeholder="localhost" required>
+        <input name="db_name" placeholder="keystone" required>
+        <input name="db_user" placeholder="root" required>
+        <input name="db_pass" type="password">
+        <button>Database opslaan</button>
+    </form>
+
+    <form data-ajax action="/install/admin" hidden>
+        <input name="email" type="email" required>
+        <input name="password" type="password" required>
+        <button>Installeren</button>
+    </form>
+</div>
+{% endblock %}

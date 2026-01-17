@@ -22,11 +22,13 @@ final class PageVersionController extends BaseController {
 
         $pageId = (int) $args['id'];
 
+        $page = $this->pages->findById((int) $pageId);
+
         return $this->twig->render(
             $response,
             '@pages/admin/versions.twig',
             [
-                'pageId'   => $pageId,
+                'page'   => $page,
                 'versions' => $this->pages->versions($pageId),
             ]
         );

@@ -48,9 +48,27 @@ public function schedule(
     ]);
 }
 
-
-
 public function publish(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $args
+    ): ResponseInterface {
+
+        $data = $request->getParsedBody();
+
+        
+        $page = $this->pages->findById((int) $args['id']);
+
+        return $this->view->render(
+            $response,
+            '@pages/admin/publish.twig',
+            [
+                'page' => $page,
+            ]
+        );
+    }
+
+public function publishPost(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $args

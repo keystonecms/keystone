@@ -1,0 +1,206 @@
+:root {
+    --primary: #1f3a5f;
+    --secondary: #3c587a;
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --border: #d9dee5;
+    --text: #1c1f24;
+    --muted: #6b7280;
+    --success: #3b7d5c;
+    --warning: #c58a2e;
+    --danger: #b54747;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Layout */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 240px;
+    background: var(--primary);
+    color: #fff;
+    padding: 1.5rem;
+}
+
+.admin-logo {
+    margin: 0 0 2rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.admin-sidebar nav a {
+    display: block;
+    color: #e5ecf5;
+    text-decoration: none;
+    padding: 0.5rem 0;
+}
+
+.admin-sidebar nav a:hover {
+    color: #fff;
+}
+
+/* Main */
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+}
+
+.admin-content {
+    padding: 2rem;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+th {
+    background: #f0f3f8;
+    font-weight: 600;
+}
+
+/* Buttons */
+button {
+    background: var(--secondary);
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+button:hover {
+    background: var(--primary);
+}
+
+button.danger {
+    background: var(--danger);
+}
+
+button.success {
+    background: var(--success);
+}
+
+/* Status badges */
+.badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.badge.published {
+    background: var(--success);
+    color: #fff;
+}
+
+.badge.draft {
+    background: var(--muted);
+    color: #fff;
+}
+
+/* Header layout */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    min-width: 160px;
+    z-index: 100;
+}
+
+/* Open bij hover OF focus */
+.user-menu:hover .user-menu-dropdown,
+.user-menu:focus-within .user-menu-dropdown {
+    display: block;
+}
+
+
+.logout-button {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background: var(--bg);
+}
+
+.caret {
+    margin-left: 0.3rem;
+}
+
+/* Admin footer */
+.admin-footer {
+    position: fixed;
+    bottom: 0;
+    left: 240px; /* sidebar width */
+    right: 0;
+    height: 48px;
+
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+
+    z-index: 1030;
+}
+
+/* Footer content */
+.admin-footer-inner {
+    height: 100%;
+    padding: 0 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-footer img {
+    opacity: 0.85;
+}
+
+.admin-footer:hover img {
+    opacity: 1;
+}
+
+

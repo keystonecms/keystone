@@ -15,6 +15,13 @@ private const MAX_LINKS_PER_SUBJECT = 20;
         private InternalLinkRepositoryInterface $repository
     ) {}
 
+
+       /**
+     * @return InternalLink[]
+     */
+    public function getLinksFrom(LinkSubject $from): array {
+        return $this->repository->findFrom($from);
+    }
     /**
      * @param array<int, array{
      *   to_type: string,

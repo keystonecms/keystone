@@ -14,6 +14,12 @@ A stable, developer-first CMS core.
 - Repositories are dumb
 - Core is stable, plugins evolve
 
+## Online Updater
+
+Keystone gebruikt versioned, immutable releases.
+Activatie gebeurt via een atomische symlink-switch.
+Rollback is altijd mogelijk zolang releases bestaan.
+
 ## Important
 bootstrap/app.php contains no domain logic.
 All application wiring lives in bootstrap/container.php.
@@ -87,6 +93,8 @@ Controller  →  Service  →  Repository
 6. Core kent geen plugins
 7. Twig base layout + blocks
 8. Homepage = expliciete business rule
+9. Users zijn gebonden aan rollen
+10. De rollen zijn verbonden aan policies
 
 Dit is een extreem solide basis — hier ga je jaren plezier van hebben.
 

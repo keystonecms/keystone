@@ -1,0 +1,44 @@
+{% extends "@core/auth/base_auth.twig" %}
+
+{% block content %}
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+
+                {# Header #}
+                <div class="text-center mb-4">
+                    <h1 class="h4 fw-semibold mb-2">Keystone CMS</h1>
+
+                    <img
+                        src="/assets/favicon/favicon.svg"
+                        width="48"
+                        height="48"
+                        class="my-3 shadow-sm rounded"
+                        alt="Keystone CMS"
+                    >
+
+                    <p class="text-muted small mb-0">
+                        A stable, developer-first CMS core.
+                    </p>
+                </div>
+
+                {# Alerts (AJAX / server) #}
+                <div class="alert alert-danger d-none"></div>
+                <div class="alert alert-success d-none"></div>
+
+                {# Page-specific content #}
+                {% block auth_content %}{% endblock %}
+
+            </div>
+        </div>
+
+        {# Footer #}
+        <div class="text-center text-muted small mt-4">
+            Keystone CMS v{{ keystone.version }}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

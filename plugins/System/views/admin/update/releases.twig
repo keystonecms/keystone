@@ -1,0 +1,23 @@
+<h2>Laatste release</h2>
+
+<div class="card">
+    <p><strong>Versie:</strong> {{ release.version }}</p>
+    <p><strong>Naam:</strong> {{ release.name }}</p>
+    <p><strong>Datum:</strong> {{ release.published_at }}</p>
+
+    <details>
+        <summary>Release notes</summary>
+        <pre>{{ release.notes }}</pre>
+    </details>
+
+    <form id="form-dry-run" method="post"
+          action="/admin/system/update/dry-run">
+        {{ csrf() }}
+        <input type="hidden" name="zip" value="{{ release.zip }}">
+        <input type="hidden" name="version" value="{{ release.version }}">
+
+        <button class="btn btn-secondary">
+            Dry-run deze release
+        </button>
+    </form>
+</div>

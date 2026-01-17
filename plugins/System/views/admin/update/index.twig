@@ -1,0 +1,39 @@
+{% extends '@pages/admin/layout.twig' %}
+
+{% block content %}
+<h1>Systeem update</h1>
+
+<div class="card">
+    <p><strong>Huidige versie:</strong> {{ app.version }}</p>
+
+    <form id="form-dry-run" action="/admin/system/update/dry-run" method="post">
+        {{ csrf() }}
+
+        <label>Release ZIP pad</label>
+        <input type="text" name="zip" class="form-control" required>
+
+        <button class="btn btn-secondary mt-2">Dry-run</button>
+    </form>
+</div>
+
+<div id="preflight-result" class="mt-4 d-none">
+    <h3>Preflight checks</h3>
+    <ul id="check-list"></ul>
+
+    <form id="form-activate" action="/admin/system/update/activate" method="post">
+        {{ csrf() }}
+
+<input type="hidden" name="zip" value="{{ release.zip }}">
+<input type="hidden" name="version" value="{{ release.version }}">
+
+
+        <button class="btn btn-danger">Activeer update</button>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/update-check.js"></script>
+{% endblock %}

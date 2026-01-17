@@ -13,6 +13,12 @@
    {# Plugin / page specific CSS #}
     {% block styles %}{% endblock %}
 
+<link rel="icon" href="/assets/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png">
+<link rel="manifest" href="/assets/favicon/site.webmanifest">
+
 </head>
 <body>
 
@@ -24,8 +30,10 @@
         <nav>
             {% block navigation %}
                 <a href="/admin/pages">Pages</a>
+                <a href="/admin/pages/create">Create page</a>
                 <a href="/admin/plugins">Plugins</a>
                 <a href="/admin/media">Media</a>
+                <a href="/admin/users">Users</a>
                 {% endblock %}
         </nav>
     </aside>
@@ -41,6 +49,30 @@
     </div>
 </header>
 
+{% if update.has_update %}
+<div class="alert alert-warning d-flex justify-content-between align-items-center">
+    <div>
+        <strong>Update beschikbaar</strong><br>
+        Huidig: {{ update.current }} →
+        Nieuw: {{ update.latest }}
+    </div>
+
+    <div class="btn-group">
+        <a href="/admin/system/update"
+           class="btn btn-sm btn-outline-primary">
+            Details
+        </a>
+
+        <button
+            class="btn btn-sm btn-primary"
+            data-action="dry-run">
+            Dry-run
+        </button>
+    </div>
+</div>
+{% endif %}
+
+
         <main class="admin-content">
             {% block content %}{% endblock %}
         </main>
@@ -48,8 +80,30 @@
 
 </div>
 
-    {# Plugin / page specific JS #}
+<div class="admin-footer">
+    <div class="admin-footer-inner">
+        <span class="text-muted small">
+            © {{ "now"|date("Y") }}
+        </span>
+<div class="d-flex align-items-center gap-2 text-muted small">
+            <img
+                src="/assets/favicon/favicon.svg"
+                alt="Keystone CMS"
+                width="16"
+                height="16"
+                style="display: block;"
+            >
+            <span>
+                Powered by Keystone CMS v{{ keystone.version }}
+            </span>
+        </div>
+
+    </div>
+</div>
+
+{# Plugin / page specific JS #}
     {% block scripts %}{% endblock %}
+
 </body>
 
 </body>

@@ -1,0 +1,58 @@
+{% extends '@pages/admin/layout.twig' %}
+
+{% block title %}Mijn account{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h4 mb-4">Mijn account</h1>
+
+    <div class="alert alert-success d-none"></div>
+    <div class="alert alert-danger d-none"></div>
+
+    <h5>Profiel</h5>
+    <ul class="list-unstyled">
+        <li><strong>Email:</strong> {{ user.email }}</li>
+        <li><strong>Status:</strong> {{ user.status }}</li>
+        <li><strong>Rollen:</strong> {{ user.roles|join(', ') }}</li>
+    </ul>
+
+    <hr>
+
+    <h5>Wachtwoord wijzigen</h5>
+    <form id="form-password" action="/account/password" method="post">
+        {{ csrf() }}
+
+        <div class="mb-2">
+            <input type="password" name="current_password" class="form-control" placeholder="Huidig wachtwoord">
+        </div>
+
+        <div class="mb-2">
+            <input type="password" name="new_password" class="form-control" placeholder="Nieuw wachtwoord">
+        </div>
+
+        <button class="btn btn-primary">Wijzig wachtwoord</button>
+    </form>
+
+    <hr>
+
+    <h5>Beveiliging</h5>
+
+    {% if user.hasTwoFactor %}
+        <p>2FA is <strong>ingeschakeld</strong></p>
+
+        <form id="form-2fa-disable" action="/account/2fa/disable" method="post">
+            {{ csrf() }}
+            <button class="btn btn-warning">2FA uitschakelen</button>
+        </form>
+    {% else %}
+        <p>2FA is <strong>uitgeschakeld</strong></p>
+        <a href="/admin/2fa" class="btn btn-secondary">2FA inschakelen</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/multiform-ajax.js"></script>
+{% endblock %}

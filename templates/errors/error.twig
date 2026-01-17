@@ -1,24 +1,51 @@
-{% extends "layouts/base.twig" %}
+{% extends "layout/base.twig" %}
 
-{% block title %}Fout {{ status }}{% endblock %}
+{% block body %}
+<div class="container-fluid vh-100">
+    <div class="row h-100 align-items-center justify-content-center">
+        <div class="col-11 col-sm-8 col-md-6 col-lg-4">
 
-{% block content %}
-<div class="error-page">
-    <h1>{{ status }}</h1>
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body p-5">
 
-    <p class="error-message">
-        {{ message }}
-    </p>
+                    {# Status code #}
+                    <div class="display-4 fw-bold text-primary mb-3">
+                        {{ status }}
+                    </div>
 
-    <p class="error-code">
-        Referentiecode: <strong>{{ code }}</strong>
-    </p>
+                    {# Error code (E404, E500, etc) #}
+                    <div class="text-uppercase text-muted small mb-3">
+                        {{ code }}
+                    </div>
 
-    {% if debug %}
-        <hr>
-        <pre>{{ debug }}</pre>
-    {% endif %}
+                    {# Message #}
+                    <p class="fs-5 text-secondary mb-4">
+                        Oeps an error, please report it!
+                    </p>
 
-    <a href="/" class="btn btn-primary">Terug naar homepage</a>
+                    {# Actions #}
+                    <div class="d-grid gap-2">
+                        <a href="/" class="btn btn-primary">
+                            To homepage
+                        </a>
+
+                        {% if status == 403 %}
+                            <a href="/login" class="btn btn-outline-secondary">
+                                Try logging in again
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            {# Footer hint #}
+            <div class="text-center text-muted small mt-4">
+                Keystone CMS
+            </div>
+
+        </div>
+    </div>
 </div>
 {% endblock %}
+

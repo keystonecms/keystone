@@ -14,15 +14,18 @@ use Keystone\Plugins\InternalLinks\Domain\{
 };
 use Slim\Psr7\Response;
 use Keystone\Domain\User\CurrentUser;
+use Slim\Views\Twig;
+
 
 final class InternalLinkController {
     public function __construct(
+        private Twig $view,
         private InternalLinkService $service,
         private Authorizer $authorizer,
         private CurrentUser $currentUser
     ) {}
 
-    public function index(
+   public function index(
         ServerRequestInterface $request,
         ResponseInterface $response,
         array $args
@@ -41,11 +44,11 @@ final class InternalLinkController {
 
         $links = $this->service->getLinksFrom($subject);
 
-        dd($links);
 
-        return render($response, '@internal-links/admin/index.twig', [
+        return $this->view->render($response, '@internal-links/admin/index.twig', [
             'subject' => $subject,
-            'links' => $links
+            'links' => $links,
+            'page' => $subject
         ]);
     }
 

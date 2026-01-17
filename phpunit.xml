@@ -1,12 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="tests/bootstrap.php"
-         colors="true"
-         stopOnFailure="false">
 
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.0/phpunit.xsd"
+
+    bootstrap="tests/bootstrap.php"
+
+    executionOrder="random"
+    cacheDirectory=".phpunit.cache"
+
+    failOnRisky="true"
+    failOnWarning="true"
+    failOnNotice="false"
+
+    colors="true"
+>
+    <!-- ============================= -->
+    <!-- Test Suites                   -->
+    <!-- ============================= -->
     <testsuites>
-        <testsuite name="Keystone CMS">
-            <directory>tests</directory>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">tests/Unit</directory>
+            <directory suffix="Test.php">tests/Auth</directory>
+        </testsuite>
+
+        <testsuite name="Integration">
+            <directory suffix="Test.php">tests/Integration</directory>
         </testsuite>
     </testsuites>
 
+    <!-- ============================= -->
+    <!-- PHP ini / env                 -->
+    <!-- ============================= -->
+    <php>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_DEBUG" value="1"/>
+
+        <!-- Zorgt dat tests deterministisch blijven -->
+        <ini name="zend.assertions" value="1"/>
+        <ini name="assert.exception" value="1"/>
+    </php>
 </phpunit>

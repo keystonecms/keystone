@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Keystone\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Slim\App;

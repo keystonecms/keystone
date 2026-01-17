@@ -1,56 +1,37 @@
-{% extends 'auth/base_auth.twig' %}
+{% extends "@core/auth/layout.twig" %}
 
+{% block auth_content %}
+<form id="form-login" method="post" action="/login">
 
-{% block title %}Inloggen{% endblock %}
+    {{ csrf() }}
 
-{% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-
-            <div class="card mt-5">
-                <div class="card-body">
-
-                    <h1 class="h4 mb-4 text-center">
-                        Keystone CMS
-                    </h1>
-{% if error %}
-    <div class="alert alert-danger">
-        Ongeldige inloggegevens
+    <div class="mb-3">
+        <label class="form-label">E-mail</label>
+        <input type="email" name="email" class="form-control" required>
     </div>
-{% endif %}
 
-
-                    <form method="post" action="/login">
-                       
-                        {{ csrf() }}
-
-                        <div class="mb-3">
-                            <label class="form-label">E-mail</label>
-                            <input type="email"
-                                   name="email"
-                                   class="form-control"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Wachtwoord</label>
-                            <input type="password"
-                                   name="password"
-                                   class="form-control"
-                                   required>
-                        </div>
-
-                        <button class="btn btn-primary w-100">
-                            Inloggen
-                        </button>
-
-                    </form>
-
-                </div>
-            </div>
-
-        </div>
+    <div class="mb-3">
+        <label class="form-label">Wachtwoord</label>
+        <input type="password" name="password" class="form-control" required>
     </div>
-</div>
+
+    <button class="btn btn-primary w-100">
+        Inloggen
+    </button>
+
+    <div class="d-flex justify-content-between small mt-3">
+        <a href="/register" class="link-secondary">
+            Account aanmaken
+        </a>
+        <a href="/forgot-password" class="link-secondary">
+            Wachtwoord vergeten?
+        </a>
+    </div>
+</form>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/multiform-ajax.js"></script>
 {% endblock %}

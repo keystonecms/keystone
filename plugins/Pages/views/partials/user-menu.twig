@@ -1,16 +1,36 @@
 {% if auth.user %}
-<div class="user-menu">
-    <button class="user-menu-trigger">
+<div class="user-menu dropdown">
+    <button
+        class="user-menu-trigger dropdown-toggle"
+        type="button"
+        aria-haspopup="true"
+        aria-expanded="false"
+    >
         {{ auth.user.email }}
-        <span class="caret">▾</span>
     </button>
 
-    <div class="user-menu-dropdown">
-        <button class="logout-button"><a href="/logout">
+    <ul class="user-menu-dropdown dropdown-menu">
+        <li>
+            <a class="dropdown-item" href="/account">
+                Account
+            </a>
+        </li>
+        <li class="dropdown-divider"></li>
 
+{% if auth.user.hasRole('admin') %}
+<li>
+    <a class="dropdown-item" href="/admin/pages">
+        Admin
+    </a>
+</li>
+{% endif %}
+
+        <li>
+            <a class="dropdown-item text-danger" href="/logout">
                 Logout
-        </a>
-        </button>
-    </div>
+            </a>
+        </li>
+    </ul>
 </div>
 {% endif %}
+

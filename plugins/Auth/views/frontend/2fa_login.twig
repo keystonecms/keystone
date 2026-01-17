@@ -1,0 +1,38 @@
+{% extends "@core/auth/layout.twig" %}
+
+{% block auth_content %}
+<form id="2fa-form" method="post" action="/2fa">
+
+
+    {{ csrf() }}
+
+    <p class="text-muted small mb-3 text-center">
+        Vul de 6-cijferige code in uit je authenticator app.
+    </p>
+
+    <div class="mb-3">
+        <input
+            type="text"
+            name="code"
+            class="form-control text-center fs-4"
+            maxlength="6"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            required
+        >
+    </div>
+
+    <button class="btn btn-primary w-100">
+        Verifiëren
+    </button>
+</form>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/multiform-ajax.js"></script>
+{% endblock %}
+
+
+

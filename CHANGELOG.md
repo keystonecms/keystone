@@ -1,3 +1,14 @@
+## Added a CI/CD pipeline (2026-01-18)
+- github pipeline
+- added online installer
+- added online updater
+
+## Added a Auth plugin (2026-01-17)
+- sign-up
+- supply password
+- email tokens
+- role based
+
 ## Added internal links for pages (2026-01-16)
 - Internal links option for pages
 - Internal links plugin

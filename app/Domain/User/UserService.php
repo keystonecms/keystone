@@ -16,6 +16,10 @@ final class UserService
     {
         $user = $this->users->findByEmail($email);
 
+        if (! $user->isActive()) {
+                 throw new RuntimeException('User not active');
+        }
+
         if (!$user || !$user->isActive()) {
             throw new RuntimeException('Invalid credentials');
         }
@@ -26,6 +30,39 @@ final class UserService
 
         return $user;
     }
+
+    public function all(): array {
+    return $this->users->findAll();
+    }
+
+    public function changeStatus(int $userId, string $status): void {
+    if (!in_array($status, ['pending', 'active', 'disabled'], true)) {
+        throw new \InvalidArgumentException('Invalid status');
+    }
+
+    $this->users->updateStatus($userId, $status);
+}
+
+public function changePassword(
+    int $userId,
+    string $current,
+    string $new
+): void {
+    $user = $this->users->findById($userId);
+
+    if (!password_verify($current, $user->passwordHash())) {
+        throw new \RuntimeException('Invalid password');
+    }
+
+    $hash = password_hash($new, PASSWORD_DEFAULT);
+    $this->users->updatePassword($userId, $hash);
+}
+
+
+public function setTwoFactorSecret(int $userId, ?string $secret): void {
+    $this->users->setTwoFactorSecret($userId, $secret);
+}
+
 
     public function create(
         string $email,
@@ -38,7 +75,7 @@ final class UserService
             id: 0,
             email: $email,
             passwordHash: $hash,
-            active: true,
+            status: 'active',
             roles: $roles
         );
 

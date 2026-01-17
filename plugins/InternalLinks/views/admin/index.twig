@@ -1,4 +1,14 @@
+{% extends '@pages/admin/layout.twig' %}
+
+{% block title %}Internal  Links – Keystone{% endblock %}
+
 {% block content %}
+
+{% include '@pages/admin/_page_subnav.twig' with {
+  page: page,
+  active: 'links'
+} %}
+
 <div class="container-fluid">
 
     <h1 class="h4 mb-4">Interne links</h1>

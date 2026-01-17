@@ -1,0 +1,12 @@
+{% extends "base.twig" %}
+
+{% block content %}
+<h1>Admin account</h1>
+
+<form method="post" action="/install/admin">
+    <input name="email" type="email" placeholder="admin@site.nl" required>
+    <input name="password" type="password" required>
+
+    <button class="btn btn-success">Installeren</button>
+</form>
+{% endblock %}

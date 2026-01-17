@@ -10,20 +10,25 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Views\Twig;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Psr7\Response;
+use Keystone\Http\Controllers\BaseController;
 
-final class LoginController {
+use Keystone\Plugins\Auth\Domain\Auth\TwoFactorService;
+
+
+final class LoginController extends BaseController {
+
     public function __construct(
         private UserService $users,
         private Twig $view,
         private ResponseFactoryInterface $responseFactory,
-        private LoggerInterface  $logger
+        private LoggerInterface  $logger,
+        private TwoFactorService $twoFactor
     ) {}
 
     public function show(ServerRequestInterface $request): ResponseInterface
     {
  $queryParams = $request->getQueryParams();
-
-error_log('TWIG HASH: ' . spl_object_id($this->view));
 
         return $this->view->render(
             $this->responseFactory->createResponse(),
@@ -34,40 +39,51 @@ error_log('TWIG HASH: ' . spl_object_id($this->view));
         );
     }
 
-    public function authenticate(ServerRequestInterface $request): ResponseInterface
-    {
-        $data = (array) $request->getParsedBody();
+public function authenticate(ServerRequestInterface $request): ResponseInterface {
+    $data = (array) $request->getParsedBody();
+    $response = new Response();
 
     $this->logger->info('Login attempt', [
             'email' => $data['email'],
             'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
         ]);
 
-        try {
-            $user = $this->users->authenticate(
-                $data['email'] ?? '',
-                $data['password'] ?? ''
-            );
+    try {
+        $user = $this->users->authenticate(
+            $data['email'] ?? '',
+            $data['password'] ?? ''
+        );
 
-      $_SESSION['user_id'] = $user->id();
+        // 🔐 Heeft user 2FA?
+        if ($user->hasTwoFactor()) {
 
-            $this->logger->warning('Login succesfull', [
-            'email' => $data['email'],
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
+            $challengeToken = $this->twoFactor->startChallenge($user);
+
+            $_SESSION['2fa_user_id'] = $user->id();
+
+            return $this->json($response, [
+                'status'   => 'success',
+                'message'  => 'Tweestapsverificatie vereist',
+                'redirect' => '/2fa?token=' . $challengeToken,
+            ]);
+        }
+
+        // ✅ Geen 2FA → direct login
+        $_SESSION['user_id'] = $user->id();
+
+        return $this->json($response, [
+            'status'   => 'success',
+            'message'  => 'Succesvol ingelogd',
+            'redirect' => '/admin/pages',
         ]);
 
- 
-            return $this->redirect('/admin/pages');
-
-        } catch (\RuntimeException $e) {
-            return $this->redirect('/login?error=1');
+    } catch (\RuntimeException $e) {
+        return $this->json($response, [
+            'status'  => 'error',
+            'message' => 'Ongeldige login gegevens',
+        ], 401);
         }
     }
-
-    private function redirect(string $path): ResponseInterface
-    {
-        return $this->responseFactory
-            ->createResponse(302)
-            ->withHeader('Location', $path);
-    }
 }
+
+?>

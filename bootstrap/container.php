@@ -32,12 +32,11 @@ use Keystone\Http\Middleware\AuthMiddleware;
 use Keystone\Core\Plugin\PluginLoader;
 use Keystone\Core\Auth\Authorizer;
 use Keystone\Core\Plugin\PluginRegistry;
-
+use Keystone\Http\Error\ErrorHandler;
 
 return [
-
     PDO::class => function () {
-        return new PDO(
+        $pdo = new PDO(
             $_ENV['DB_DSN'],
             $_ENV['DB_USER'],
             $_ENV['DB_PASS'],
@@ -46,13 +45,18 @@ return [
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]
         );
+
+        // 🔒 Forceer UTC voor deze database-sessie
+        $pdo->exec("SET time_zone = '+00:00'");
+
+        return $pdo;
     },
     Twig::class => function (ContainerInterface $c) {
         static $twig = null;
 
         if ($twig === null) {
             $twig = Twig::create(
-                dirname(__DIR__) . '/templates',
+                BASE_PATH . '/templates',
                 ['cache' => false]
             );
 
@@ -68,10 +72,17 @@ return [
                     ['is_safe' => ['html']]
                 )
             );
-        }
+                $twig->getLoader()->addPath(
+                BASE_PATH . '/templates',
+                'core'
+            );
+            // Keystone globals
+           $twig->getEnvironment()->addGlobal('keystone', ['version' => KEYSTONE_VERSION,
+            ]);
+            }
 
         return $twig;
-    }, 
+    },
     CurrentUser::class => factory(function ($c) {
       error_log('CurrentUser factory called');
     if (!isset($_SESSION['user_id'])) {
@@ -96,14 +107,14 @@ return [
         // Algemene applicatie logs
             $logger->pushHandler(
                 new StreamHandler(
-                    __DIR__ . '/../storage/logs/app.log',
+                    BASE_PATH . '/storage/logs/app.log',
                     Logger::INFO
                 )
             );
 
             $logger->pushHandler(
                 new StreamHandler(
-                    __DIR__ . '/../storage/logs/error.log',
+                    BASE_PATH . '/storage/logs/error.log',
                     Logger::ERROR
                 )
             );
@@ -114,7 +125,7 @@ return [
         return new PluginLoader(
             $c,
             $c->get(\Psr\Log\LoggerInterface::class),
-            __DIR__ . '/../plugins'
+            BASE_PATH . '/plugins'
         );
     },
     PasswordHasher::class => DI\create(),
@@ -138,11 +149,12 @@ return [
     return new Authorizer();
     },
     
+    ErrorHandler::class => DI\autowire(),
     PluginRegistry::class => DI\create(),
     // Authorizer::class => autowire(),
-    AuthMiddleware::class => autowire(),
+    AuthMiddleware::class => DI\autowire(),
     CsrfToken::class => create(),
-    CsrfMiddleware::class => autowire(),
+    CsrfMiddleware::class => Di\autowire(),
 /**
  * autowire statements
  */

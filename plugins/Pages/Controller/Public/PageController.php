@@ -8,7 +8,8 @@ use Keystone\Plugins\Pages\Domain\PageService;
 use Slim\Views\Twig;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Keystone\Core\Http\Exception\NotFoundException;
+use Slim\Exception\HttpNotFoundException;
+
 
 use Keystone\Plugins\Seo\Domain\SeoSubject;
 use Keystone\Plugins\Seo\Domain\SeoService;
@@ -26,7 +27,7 @@ final class PageController {
     ): ResponseInterface {
         $page = $this->pages->getHomepage();
 
-$seo = $this->seoService->getForSubject(
+        $seo = $this->seoService->getForSubject(
     subject: new SeoSubject('page', $page->id()),
     fallbackTitle: $page->title(),
     fallbackDescription: mb_substr(strip_tags($page->content()), 0, 160),
@@ -54,7 +55,7 @@ $seo = $this->seoService->getForSubject(
     $page = $this->pages->findBySlug($args['slug']);
 
         if (!$page) {
-            throw new NotFoundException();
+            throw new HttpNotFoundException($request);
         }
 
 $seo = $this->seoService->getForSubject(

@@ -27,13 +27,19 @@
       <a href="{{ base_path }}/admin/internal-links/pages/{{ page.id }}"
          class="btn btn-outline-primary
                 {{ active == 'links' ? 'active' }}">
-        Interne links
+        Internal links
       </a>
 
       <a href="{{ base_path }}/admin/pages/{{ page.id }}/versions"
          class="btn btn-outline-secondary
                 {{ active == 'versions' ? 'active' }}">
-        Versies
+        Versions
+      </a>
+
+     <a href="{{ base_path }}/admin/pages/{{ page.id }}/publish"
+         class="btn btn-outline-secondary
+                {{ active == 'publish' ? 'active' }}">
+        Publish
       </a>
 
     </div>
