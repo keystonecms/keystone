@@ -1,35 +1,55 @@
-{% extends "@pages/admin/layout.twig" %}
-
-{% block header %} <h2>Overzicht plugins</h2> {% endblock %}
-
-{% block title %}
-Overzicht plugins
-{% endblock %}
+{% extends '@core/admin/pages/layout.twig' %}
 
 {% block content %}
 
-<h1 class="h3 mb-4">
-    Overzicht plugins
-</h1>
+<h1>Plugins</h1>
 
-<table>
+<table class="table">
     <thead>
         <tr>
-            <th>Plugin</th>
-            <th>Version</th>
-            <th>Description</th>
-            <th>Migrations</th>
+            <th>Naam</th>
+            <th>Versie</th>
+            <th>Status</th>
+            <th class="text-end">Manage</th>
         </tr>
     </thead>
     <tbody>
+
     {% for plugin in plugins %}
         <tr>
-            <td>{{ plugin.name }}</td>
+            <td>
+                <strong>{{ plugin.name }}</strong><br>
+                <small>{{ plugin.description }}</small>
+            </td>
             <td>{{ plugin.version }}</td>
-            <td>{{ plugin.description }}</td>
-            <td>✔</td>
+            <td>
+                {% if plugin.enabled %}
+                    <span class="badge bg-success">Enabled</span>
+                {% else %}
+                    <span class="badge bg-secondary">Disabled</span>
+                {% endif %}
+            </td>
+            <td class="text-end">
+                {% if plugin.enabled %}
+                    <form method="post" action="/admin/plugins/{{ plugin.name }}/disable">
+                        {{ csrf() }}
+                        <button class="btn btn-sm btn-warning">
+                            Disable
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" action="/admin/plugins/{{ plugin.name }}/enable">
+                        {{ csrf() }}
+                        <button class="btn btn-sm btn-primary">
+                            Enable
+                        </button>
+                    </form>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
 {% endblock %}
+
+

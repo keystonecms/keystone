@@ -1,0 +1,15 @@
+{% extends "@Theme/base.twig" %}
+
+{% block main %}
+<main class="layout layout-fullwidth">
+
+    <article class="page page-fullwidth">
+        {% for block in page.blocks %}
+            <section class="fullwidth-section">
+                {{ block.render()|raw }}
+            </section>
+        {% endfor %}
+    </article>
+
+</main>
+{% endblock %}

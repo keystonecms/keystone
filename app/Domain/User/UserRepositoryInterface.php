@@ -13,6 +13,10 @@ interface UserRepositoryInterface
 
     public function findAll(): array;
 
+    public function countAll(): int;
+
+    public function updateAvatar(int $userId, string $path): void;
+
     public function findByEmail(string $email): ?User;
 
     public function createPending(string $email): User;

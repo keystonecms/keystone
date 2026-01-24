@@ -5,15 +5,14 @@ namespace Keystone\Domain\User;
 use Keystone\Infrastructure\Auth\PasswordHasher;
 use RuntimeException;
 
-final class UserService
-{
+final class UserService {
+
     public function __construct(
         private UserRepositoryInterface $users,
         private PasswordHasher $hasher
     ) {}
 
-    public function authenticate(string $email, string $password): User
-    {
+public function authenticate(string $email, string $password): User {
         $user = $this->users->findByEmail($email);
 
         if (! $user->isActive()) {

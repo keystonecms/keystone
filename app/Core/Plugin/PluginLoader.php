@@ -1,103 +1,101 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Keystone\Core\Plugin;
 
-use Keystone\Core\Migration\MigrationRunner;
-use Keystone\Core\Migration\MigrationInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
+
+use Keystone\Core\Migration\MigrationInterface;
+use Keystone\Core\Migration\MigrationRunner;
 use RuntimeException;
 
+
 final class PluginLoader {
+
     public function __construct(
         private ContainerInterface $container,
         private LoggerInterface $logger,
-        private string $pluginPath
+        private PluginRepository $pluginRepository
     ) {}
 
-    public function load(App $app): void
+    /**
+     * @param PluginDescriptor[] $descriptors
+     */
+    public function load(App $app, array $descriptors): void
     {
-        foreach (glob($this->pluginPath . '/*/plugin.php') as $pluginFile) {
 
-            $this->logger->info('Loading plugin', [
-                'file' => $pluginFile,
-            ]);
 
-            $plugin = require $pluginFile;
+    usort($descriptors, fn ($a, $b) =>
+            $a->loadOrder <=> $b->loadOrder
+    );
 
-            if (!$plugin instanceof PluginInterface) {
-                throw new RuntimeException(
-                    "Invalid plugin: {$pluginFile}"
-                );
+
+        foreach ($descriptors as $descriptor) {
+
+            // alleen enabled plugins laden
+            if (!$this->pluginRepository->isEnabled($descriptor->name)) {
+                continue;
             }
 
+            $this->logger->info('Loading plugin', [
+                'plugin' => $descriptor->name,
+            ]);
 
-            // registreren
-            $this->container
-                ->get(PluginRegistry::class)
-                ->add($plugin);
+            $pluginClass = $descriptor->class;
+            $plugin = new $pluginClass();
 
-            // Services / DI
             $plugin->register($this->container);
-
-            // Routes / middleware
             $plugin->boot($app, $this->container);
 
-            // Migrations (DIT IS DE NIEUWE STAP)
             $this->loadAndRunMigrations(
-                $plugin->getName(),
-                dirname($pluginFile)
+                $descriptor->name,
+                $descriptor->path
             );
 
             $this->logger->info('Plugin loaded', [
-                 'plugin' => $plugin->getName(),
-                 'version'     => $plugin->getVersion(),
-                 'description' => $plugin->getDescription(),
-
+                'plugin' => $descriptor->name,
+                'version' => $descriptor->version,
             ]);
         }
     }
 
-    /**
-     * @return MigrationInterface[]
-     */
-    private function loadAndRunMigrations(
-        string $pluginName,
-        string $pluginDir
-    ): void {
+/**
+ * @param string $pluginName
+ * @param string $pluginPath
+ */
+private function loadAndRunMigrations(
+    string $pluginName,
+    string $pluginPath
+): void {
+    $migrationDir = $pluginPath . '/migrations';
 
-        $migrationDir = $pluginDir . '/migrations';
-
-        if (!is_dir($migrationDir)) {
-            return;
-        }
-
-        $migrations = [];
-
-        foreach (glob($migrationDir . '/*.php') as $file) {
-            $migration = require $file;
-
-            if (!$migration instanceof MigrationInterface) {
-                throw new RuntimeException(
-                    "Invalid migration: {$file}"
-                );
-            }
-
-            $migrations[] = $migration;
-        }
-
-        if ($migrations === []) {
-            return;
-        }
-
-        $this->container
-            ->get(MigrationRunner::class)
-            ->run($migrations);
+    if (!is_dir($migrationDir)) {
+        return;
     }
+
+    $migrations = [];
+
+    foreach (glob($migrationDir . '/*.php') as $file) {
+        $migration = require $file;
+
+        if (!$migration instanceof MigrationInterface) {
+            throw new RuntimeException(
+                "Invalid migration {$file} in plugin {$pluginName}"
+            );
+        }
+
+        $migrations[] = $migration;
+    }
+
+    if ($migrations === []) {
+        return;
+    }
+
+    $this->container
+        ->get(MigrationRunner::class)
+        ->run($migrations);
 }
 
-
+}
 ?>

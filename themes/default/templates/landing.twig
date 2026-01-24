@@ -1,0 +1,25 @@
+{% extends "@Theme/base.twig" %}
+
+{# Geen header #}
+{% block header %}{% endblock %}
+
+{% block main %}
+<main class="layout layout-landing">
+    <div class="container">
+
+        <article class="page page-landing">
+            {% for block in page.blocks %}
+                {{ block.render()|raw }}
+            {% endfor %}
+        </article>
+
+    </div>
+</main>
+{% endblock %}
+
+{# Minimale footer #}
+{% block footer %}
+<footer class="landing-footer">
+    <small>&copy; {{ "now"|date("Y") }} {{ site.name ?? 'Keystone' }}</small>
+</footer>
+{% endblock %}

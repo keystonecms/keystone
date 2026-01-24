@@ -6,10 +6,9 @@ use DI\ContainerBuilder;
 use function DI\factory;
 use function DI\autowire;
 use function DI\create;
+
 use Keystone\Security\CsrfToken;
 use Keystone\Http\Middleware\CsrfMiddleware;
-// use Keystone\Core\Authorizer\Authorizer;
-use Keystone\Core\Authorizer\PolicyResolver;
 use Keystone\Domain\Page\PagePolicy;
 use Keystone\Domain\User\UserPolicy;
 use Keystone\Domain\Page\PageRepositoryInterface;
@@ -17,22 +16,62 @@ use Keystone\Domain\User\UserRepositoryInterface;
 use Keystone\Infrastructure\Persistence\PageRepository;
 use Keystone\Infrastructure\Persistence\UserRepository;
 use Keystone\Infrastructure\Auth\PasswordHasher;
-use Slim\Views\Twig;
+
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
+use Slim\Views\Twig;
 use Twig\TwigFunction;
+use Twig\Environment;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\UidProcessor;
 use Psr\Log\LoggerInterface;
 use Psr\Container\ContainerInterface;
 
+use GuzzleHttp\Client;
+
+use Keystone\Core\Theme\ThemeManagerInterface;
+use Keystone\Core\Theme\ThemeManager;
+use Keystone\Core\Theme\ThemeInstallerInterface;
+use Keystone\Core\Theme\ThemeInstaller;
 use Keystone\Domain\User\CurrentUser;
 use Keystone\Http\Middleware\AuthMiddleware;
+
+use Keystone\Core\Plugin\PluginDiscovery;
 use Keystone\Core\Plugin\PluginLoader;
-use Keystone\Core\Auth\Authorizer;
 use Keystone\Core\Plugin\PluginRegistry;
+use Keystone\Core\Plugin\PluginRepositoryInterface;
+use Keystone\Core\Plugin\PluginRepository;
+
 use Keystone\Http\Error\ErrorHandler;
+use Keystone\Domain\Menu\Service\LinkResolver;
+use Keystone\Domain\Menu\Repository\MenuRepositoryInterface;
+use Keystone\Domain\Menu\Repository\MenuWriteRepositoryInterface;
+use Keystone\Infrastructure\Persistence\MenuRepository;
+use Keystone\Infrastructure\Persistence\MenuWriteRepository;
+use Keystone\Core\Settings\SettingsInterface;
+use Keystone\Core\Settings\DatabaseSettings;
+use Keystone\Infrastructure\Paths;
+use Keystone\Core\System\ErrorRepositoryInterface;
+use Keystone\Infrastructure\System\ErrorRepository;
+use Keystone\Admin\Menu\AdminMenuRegistry;
+use Keystone\Http\Middleware\AdminMenuMiddleware;
+use Keystone\Security\IpInfo\IpInfoCacheInterface;
+use Keystone\Security\IpInfo\NullIpInfoCache;
+use Keystone\Security\IpInfo\IpInfoClient;
+
+use Keystone\Domain\Role\RoleRepositoryInterface;
+use Keystone\Domain\Policy\PolicyRepositoryInterface;
+use Keystone\Infrastructure\Persistence\RoleRepository;
+use Keystone\Infrastructure\Persistence\PolicyRepository;
+use Keystone\Http\Session\SessionInterface;
+use Keystone\Infrastructure\Session\PhpSession;
+
+use Keystone\Security\LoginAudit\LoginAuditRepositoryInterface;
+use Keystone\Security\LoginAudit\LoginAuditRepository;
+use Keystone\i18n\Translator;
+
+
 
 return [
     PDO::class => function () {
@@ -50,8 +89,8 @@ return [
         $pdo->exec("SET time_zone = '+00:00'");
 
         return $pdo;
-    },
-    Twig::class => function (ContainerInterface $c) {
+        },
+       Twig::class => function (ContainerInterface $c) {
         static $twig = null;
 
         if ($twig === null) {
@@ -76,22 +115,28 @@ return [
                 BASE_PATH . '/templates',
                 'core'
             );
-            // Keystone globals
-           $twig->getEnvironment()->addGlobal('keystone', ['version' => KEYSTONE_VERSION,
-            ]);
-            }
+        }
 
         return $twig;
     },
+    IpInfoClient::class => function ($c) {
+        return new IpInfoClient(
+            $c->get(Client::class),
+            $c->get('settings')['ipinfo']['token']
+            );
+    },
+
+     Environment::class => function ($container) {
+        return $container->get(Twig::class)->getEnvironment();
+     },
     CurrentUser::class => factory(function ($c) {
-      error_log('CurrentUser factory called');
     if (!isset($_SESSION['user_id'])) {
         return new CurrentUser(null);
     }
 
-      $userRepository = $c->get(UserRepositoryInterface::class);
+    $userRepository = $c->get(UserRepositoryInterface::class);
 
-      $user = $userRepository->findById((int) $_SESSION['user_id']);
+    $user = $userRepository->findById((int) $_SESSION['user_id']);
 
     return new CurrentUser($user);
 }),
@@ -121,47 +166,46 @@ return [
 
         return $logger;
     },
-    PluginLoader::class => function ($c) {
-        return new PluginLoader(
-            $c,
-            $c->get(\Psr\Log\LoggerInterface::class),
-            BASE_PATH . '/plugins'
-        );
-    },
+    Paths::class => DI\autowire()->constructorParameter('basePath', BASE_PATH),
+    // PluginLoader::class => function ($c) {
+    //     return new PluginLoader(
+    //         $c,
+    //         $c->get(\Psr\Log\LoggerInterface::class),
+    //         BASE_PATH . '/plugins'
+    //     );
+    // },
+    PluginDiscovery::class => DI\autowire(),
+    PluginLoader::class => DI\autowire(),
+    Translator::class => DI\autowire(),
     PasswordHasher::class => DI\create(),
-
-    PageRepositoryInterface::class => DI\autowire(PageRepository::class),
-
-    PolicyResolver::class => function () {
-        $resolver = new PolicyResolver();
-
-        $resolver->register('page.view', PagePolicy::class);
-        $resolver->register('page.create', PagePolicy::class);
-        $resolver->register('page.update', PagePolicy::class);
-        $resolver->register('page.delete', PagePolicy::class);
-        $resolver->register('page.publish', PagePolicy::class);
-
-        $resolver->register('user.manage', UserPolicy::class);
-
-        return $resolver;
-    },
-    Authorizer::class => function () {
-    return new Authorizer();
-    },
-    
+    LinkResolver::class => DI\autowire(),
     ErrorHandler::class => DI\autowire(),
     PluginRegistry::class => DI\create(),
-    // Authorizer::class => autowire(),
     AuthMiddleware::class => DI\autowire(),
+    AdminMenuMiddleware::class => DI\autowire(),
     CsrfToken::class => create(),
-    CsrfMiddleware::class => Di\autowire(),
+    CsrfMiddleware::class => DI\autowire(),
+
 /**
  * autowire statements
  */
+   PluginRepositoryInterface::class => DI\autowire(PluginRepository::class),
+   LoginAuditRepositoryInterface::class => DI\autowire(LoginAuditRepository::class),
+   IpInfoCacheInterface::class => DI\autowire(NullIpInfoCache::class),
+   AdminMenuRegistry::class => DI\create(AdminMenuRegistry::class),
+   ErrorRepositoryInterface::class => DI\autowire(ErrorRepository::class),
+   SessionInterface::class => DI\autowire(PhpSession::class),
+   RoleRepositoryInterface::class => DI\autowire(RoleRepository::class),
+   PolicyRepositoryInterface::class => DI\autowire(PolicyRepository::class),
+   PageRepositoryInterface::class => DI\autowire(PageRepository::class),
+   ThemeManagerInterface::class => DI\autowire(ThemeManager::class),
+   ThemeInstallerInterface::class => DI\autowire(ThemeInstaller::class),
+   SettingsInterface::class => DI\autowire(DatabaseSettings::class),
    ResponseFactoryInterface::class => create(ResponseFactory::class),
    CurrentUser::class => create(), // request-scoped
-   UserRepositoryInterface::class => autowire(UserRepository::class),
+   UserRepositoryInterface::class => DI\autowire(UserRepository::class),
+   MenuRepositoryInterface::class => DI\autowire(MenuRepository::class),
+   MenuWriteRepositoryInterface::class => DI\autowire(MenuWriteRepository::class),
 
 ];
-
 ?>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Keystone\Http\Controller;
+namespace Keystone\Http\Controllers;
 
 use Keystone\Core\Setup\InstallerKernel;
 use Keystone\Core\Setup\InstallerState;

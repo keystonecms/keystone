@@ -2,7 +2,7 @@
 
 namespace Keystone\Tests\Auth;
 
-use Keystone\Tests\Tester;
+use Keystone\Tests\TestCase;
 
 
 use Keystone\Plugins\Pages\Domain\PagePolicy;
@@ -10,7 +10,7 @@ use Keystone\Domain\User\User;
 use Keystone\Core\Auth\UserStatus;
 
 
-final class PagePolicyTest extends Tester {
+final class PagePolicyTest extends TestCase {
     public function test_admin_can_edit_pages(): void
     {
         $user = new User(id: 1, email: "test@keystone.local", passwordHash: 'abc', status: UserStatus::ACTIVE, roles: ['admin'], twoFactorSecret: '11acadaq332424');

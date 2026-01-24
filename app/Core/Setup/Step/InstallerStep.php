@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Setup\Step;
+namespace Keystone\Core\Setup\Step;
 
 use App\Core\Setup\InstallerState;
 

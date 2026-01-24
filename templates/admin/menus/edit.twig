@@ -1,0 +1,92 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% import "admin/menus/partials/menu_items.twig" as tree %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Menu: {{ menu.name }}</h1>
+
+        <a href="/admin/menus" class="btn btn-outline-secondary">
+            ← Terug
+        </a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Menu items -->
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header">
+                    Menu items
+                </div>
+                <div class="card-body">
+                    {{ tree.render(menu.items, linkResolver) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Nieuw item -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header">
+                    Nieuw menu-item
+                </div>
+                <div class="card-body">
+
+                   <form method="post" action="/admin/menus/{{ menu.id }}/items" class="vstack gap-3">
+            {{ csrf() }}
+
+    <div>
+        <label class="form-label">Label</label>
+        <input name="label" class="form-control" required>
+    </div>
+
+    <div>
+        <label class="form-label">Link type</label>
+        <select name="link_type" class="form-select">
+            <option value="page">Pagina</option>
+            <option value="route">Interne route</option>
+            <option value="url">Externe URL</option>
+        </select>
+    </div>
+
+    <div>
+        <label class="form-label">Link target</label>
+        <input name="link_target" class="form-control" required>
+        <div class="form-text">
+            Pagina ID, route name (bijv. <code>login.show</code>) of URL
+        </div>
+    </div>
+
+    <div>
+        <label class="form-label">CSS class (optioneel)</label>
+        <input name="css_class" class="form-control" placeholder="bijv. nav-cta">
+        <div class="form-text">
+            Gebruik voor styling (bijv. GitHub knop)
+        </div>
+    </div>
+
+    <div>
+        <label class="form-label">Openen in</label>
+        <select name="target" class="form-select">
+            <option value="">Zelfde tabblad</option>
+            <option value="_blank">Nieuw tabblad</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary">
+        Item toevoegen
+    </button>
+</form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+

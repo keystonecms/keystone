@@ -1,0 +1,64 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block title %}Rol aanmaken{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <h1 class="h3 mb-4">Nieuwe rol</h1>
+
+    <form id="createRoleForm" method="post">
+
+        {{ csrf() }}
+
+        <div class="mb-3">
+            <label class="form-label">Rolnaam</label>
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                placeholder="Bijv. Editor, Support, Manager"
+                required
+            >
+        </div>
+
+        <button class="btn btn-primary">
+            Rol aanmaken
+        </button>
+
+        <a href="{{ path('roles.index') }}"
+           class="btn btn-link">
+            Annuleren
+        </a>
+
+    </form>
+
+</div>
+
+<script>
+document.getElementById('createRoleForm')
+    .addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const response = await fetch(
+            '{{ path('roles.store') }}',
+            {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+        );
+
+        const json = await response.json();
+
+        if (json.status === 'ok') {
+            window.location.href = json.redirect;
+        } else {
+            alert(json.message);
+        }
+    });
+</script>
+{% endblock %}
+

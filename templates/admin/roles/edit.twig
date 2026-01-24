@@ -1,0 +1,76 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block title %}Rol bewerken{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <h1 class="h3 mb-4">
+        Rol: {{ role.label }}
+    </h1>
+
+    <form method="post">
+        {{ csrf() }}
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+
+                <h2 class="h6 mb-3">Permissies</h2>
+
+                <div class="row">
+{% for category, grouped in policies %}
+    <div class="mb-5">
+
+        <h6 class="text-uppercase text-muted mb-3">
+            {{ category }}
+        </h6>
+
+        <div class="row g-3">
+            {% for policy in grouped %}
+                <div class="col-12 col-md-6">
+                   <div class="form-check bg-light rounded px-5 py-2 h-100 border">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="policies[]"
+                            value="{{ policy.id }}"
+                            id="policy_{{ policy.id }}"
+                            {% if policy.id in rolePolicyIds %}checked{% endif %}
+                        >
+                        <label
+                            class="form-check-label ms-2"
+                            for="policy_{{ policy.id }}"
+                        >
+                            <strong>{{ policy.key_name }}</strong>
+                            {% if policy.description %}
+                                <div class="text-muted small mt-1">
+                                    {{ policy.description }}
+                                </div>
+                            {% endif %}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+{% endfor %}
+
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary">
+                Opslaan
+            </button>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}

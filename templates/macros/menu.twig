@@ -1,0 +1,20 @@
+{% macro render(items, linkResolver) %}
+<ul>
+    {% for item in items %}
+        <li>
+            <a
+                href="{{ linkResolver.resolve(item) }}"
+                {% if item.cssClass %}class="{{ item.cssClass }}"{% endif %}
+                {% if item.target %}target="{{ item.target }}"{% endif %}
+                {% if item.target == '_blank' %}rel="noopener noreferrer"{% endif %}
+            >
+                {{ item.label }}
+            </a>
+
+            {% if item.children is not empty %}
+                {{ _self.render(item.children, linkResolver) }}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endmacro %}

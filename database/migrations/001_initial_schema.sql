@@ -121,5 +121,34 @@ CREATE TABLE users (
   UNIQUE KEY uniq_users_email (email)
 );
 
+CREATE TABLE menus (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  handle VARCHAR(100) NOT NULL,
+  description VARCHAR(255) DEFAULT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uniq_menus_handle (handle)
+);
 
+CREATE TABLE menu_items (
+  id INT NOT NULL AUTO_INCREMENT,
+  menu_id INT NOT NULL,
+  parent_id INT DEFAULT NULL,
 
+  label VARCHAR(255) NOT NULL,
+
+  link_type VARCHAR(20) NOT NULL,
+  link_target VARCHAR(255) NOT NULL,
+
+  sort_order INT NOT NULL DEFAULT 0,
+  is_visible TINYINT(1) NOT NULL DEFAULT 1,
+
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+
+  PRIMARY KEY (id),
+  KEY idx_menu_items_menu (menu_id),
+  KEY idx_menu_items_parent (parent_id)
+);

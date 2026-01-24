@@ -2,16 +2,16 @@
 
 namespace Keystone\Domain\User;
 
-// use Keystone\Core\Auth\UserStatus;
-
 final class User {
+
     public function __construct(
         private int $id,
+        private string $name,
         private string $email,
         private ?string $passwordHash,
         private $status,
-        private array $roles = [],
-        private ?string $twoFactorSecret
+        private ?string $twoFactorSecret,
+        private ?string $avatarPath
     ) {}
 
     public function hasTwoFactor(): bool
@@ -44,18 +44,20 @@ final class User {
         return $this->email;
     }
 
+     public function name(): string
+    {
+        return $this->name;
+    }
+    
+    public function avatarPath(): ?string
+    {
+        return $this->avatarPath;
+    }
+    
     public function passwordHash(): string
     {
         return $this->passwordHash;
     }
-
-   public function roles(): array
-    {
-        return $this->roles;
-    }
-
-    public function hasRole(string $role): bool
-    {
-        return in_array($role, $this->roles, true);
-    }
 }
+
+?>

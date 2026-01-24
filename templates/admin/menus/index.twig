@@ -1,0 +1,54 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block title %}Menu – Keystone{% endblock %}
+
+{% block header %}
+    <h2>Menu</h2>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Menus</h1>
+
+        <a href="/admin/menus/create" class="btn btn-primary">
+            + Nieuw menu
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Naam</th>
+                        <th>Handle</th>
+                        <th class="text-end">Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for menu in menus %}
+                    <tr>
+                        <td>{{ menu.name }}</td>
+                        <td><code>{{ menu.handle }}</code></td>
+                        <td class="text-end">
+                            <a href="/admin/menus/{{ menu.id }}" class="btn btn-sm btn-outline-secondary">
+                                Bewerken
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            Nog geen menu’s aangemaakt
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <h1 class="h3 mb-4">Nieuw menu</h1>
+
+    <div class="card">
+        <div class="card-body">
+
+            <form method="post" action="/admin/menus" class="row g-3">
+{{ csrf() }}
+                <div class="col-md-6">
+                    <label class="form-label">Naam</label>
+                    <input name="name" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Handle</label>
+                    <input name="handle" class="form-control" required>
+                    <div class="form-text">
+                        Technische naam, bijv. <code>main</code> of <code>footer</code>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Omschrijving</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2">
+                    <a href="/admin/menus" class="btn btn-outline-secondary">
+                        Annuleren
+                    </a>
+                    <button class="btn btn-primary">
+                        Menu aanmaken
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

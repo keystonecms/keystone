@@ -1,0 +1,19 @@
+{% extends "@Theme/base.twig" %}
+
+{% block title %}
+    {{ page.title ?? 'Pagina' }}
+{% endblock %}
+
+{% block content %}
+    <article class="page">
+
+        {% for block in page.blocks %}
+            {{ block.render()|raw }}
+        {% endfor %}
+
+        {% if page.content_html %}
+             {{ page.content_html | raw }}
+        {% endif %}
+
+    </article>
+{% endblock %}

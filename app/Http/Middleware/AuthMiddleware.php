@@ -10,11 +10,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Psr7\Response;
+use Keystone\Core\Auth\AuthService;
 
-final class AuthMiddleware implements MiddlewareInterface
-{
+
+final class AuthMiddleware implements MiddlewareInterface {
     public function __construct(
-        private CurrentUser $currentUser
+        private CurrentUser $currentUser,
+        private AuthService $auth
     ) {}
 
     public function process(
@@ -33,7 +35,7 @@ final class AuthMiddleware implements MiddlewareInterface
                 ->withStatus(302);
         }
 
-        // User is ingelogd → request mag door
+        $this->auth->boot(); // vult CurrentUser
         return $handler->handle($request);
     }
 }

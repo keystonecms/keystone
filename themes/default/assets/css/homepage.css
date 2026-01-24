@@ -1,0 +1,227 @@
+:root {
+    --ks-indigo: #4f46e5;
+    --ks-purple: #7c3aed;
+    --ks-teal: #14b8a6;
+    --ks-amber: #f59e0b;
+
+    --ks-bg: #f6f7fb;
+    --ks-surface: #ffffff;
+    --ks-text: #1f2937;
+    --ks-muted: #6b7280;
+    --ks-border: #e5e7eb;
+
+    --ks-gradient: linear-gradient(
+        135deg,
+        var(--ks-indigo),
+        var(--ks-purple),
+        var(--ks-teal)
+    );
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--ks-text);
+    background: var(--ks-bg);
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+}
+
+.container {
+    max-width: 1200px;
+    padding: 0 1.25rem;
+    margin: 0 auto;
+}
+
+/* ================= HEADER ================= */
+
+.site-header {
+    background: var(--ks-gradient);
+    color: #fff;
+}
+
+.header-inner {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    text-decoration: none;
+    color: #fff;
+}
+
+.brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.brand-name {
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav li {
+    position: relative;
+}
+
+.main-nav a {
+    color: rgba(255,255,255,.9);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.main-nav a:hover {
+    color: #fff;
+}
+
+
+.main-nav a.nav-cta {
+    padding: .4rem .9rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.15);
+    font-weight: 600;
+}
+
+        /* ================= HERO ================= */
+
+        .hero {
+            background: var(--ks-gradient);
+            color: #fff;
+            padding: 7rem 0 6rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            line-height: 1.1;
+            max-width: 720px;
+        }
+
+        .hero p {
+            max-width: 560px;
+            font-size: 1.15rem;
+            color: rgba(255,255,255,.85);
+        }
+
+        .hero-actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: .7rem 1.4rem;
+            border-radius: 999px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: var(--ks-indigo);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.4);
+        }
+
+        /* ================= FEATURES ================= */
+
+        .features {
+            padding: 5rem 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature {
+            background: var(--ks-surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,.04);
+        }
+
+        .feature h3 {
+            margin-top: 0;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .site-footer {
+            background: var(--ks-surface);
+            border-top: 1px solid var(--ks-border);
+            margin-top: 4rem;
+        }
+
+        .footer-inner {
+            padding: 3rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .footer-brand p {
+            margin: .5rem 0 0;
+            color: var(--ks-muted);
+            max-width: 320px;
+        }
+
+.footer-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.footer-nav a {
+    color: var(--ks-muted);
+    text-decoration: none;
+}
+
+.footer-nav a:hover {
+    color: var(--ks-text);
+}
+
+
+        .footer-bottom {
+            border-top: 1px solid var(--ks-border);
+            padding: 1rem 0;
+            text-align: center;
+            font-size: .9rem;
+            color: var(--ks-muted);
+        }

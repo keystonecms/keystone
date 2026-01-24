@@ -1,0 +1,110 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block title %}Systeemfouten{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <h1 class="h3 mb-4">Systeemfouten</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Systeemstatus</h6>
+
+                <canvas id="errorStatsChart" height="80" width="80"></canvas>
+
+                <div class="mt-3 small text-muted">
+                    <div>Open: <strong>{{ stats.open }}</strong></div>
+                    <div>Opgelost: <strong>{{ stats.resolved }}</strong></div>
+                    <div>Totaal: <strong>{{ stats.total }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% if errors is empty %}
+        <div class="alert alert-success">
+            🎉 Geen openstaande fouten
+        </div>
+    {% else %}
+        <div class="card shadow-sm">
+            <table class="table mb-0 table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tijd</th>
+                        <th>Level</th>
+                        <th>Melding</th>
+                        <th>Route</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for error in errors %}
+                        <tr>
+                            <td class="text-muted small">
+                                {{ error.created_at|date('d-m-Y H:i') }}
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">
+                                    {{ error.level }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ error.message|slice(0, 80) }}</strong>
+                            </td>
+                            <td class="text-muted small">
+                                {{ error.request_uri }}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ path('system.errors.show', {id: error.id}) }}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    Details
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('errorStatsChart');
+
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Open', 'Opgelost'],
+        datasets: [{
+            data: [
+                {{ stats.open }},
+                {{ stats.resolved }}
+            ],
+            backgroundColor: [
+                '#dc3545', // bootstrap danger
+                '#198754'  // bootstrap success
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

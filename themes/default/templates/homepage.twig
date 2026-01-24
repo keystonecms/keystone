@@ -1,0 +1,112 @@
+{% extends "@Theme/front.twig" %}
+
+{% block title %}Keystone CMS – Infrastructure-first CMS{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <div class="container">
+        <h1>Infrastructure-first CMS<br>for serious projects</h1>
+        <p>
+            Keystone CMS is a modern, plugin-driven CMS designed for developers
+            who care about architecture, testability and long-term maintainability.
+        </p>
+
+        <div class="hero-actions">
+            <a href="/docs" class="btn btn-primary">Read the docs</a>
+            <a href="https://github.com/HostingBE/simple-cms" class="btn btn-outline">
+                View on GitHub
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+
+<section class="features">
+    <div class="container feature-grid">
+        <div class="feature">
+            <h3>Plugin-driven</h3>
+            <p>
+                Core stays small. Pages, menus, SEO and more are delivered as plugins.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>Clean architecture</h3>
+            <p>
+                Services, policies and repositories follow strict boundaries.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>Production ready</h3>
+            <p>
+                Installer, updater, migrations and CI support out of the box.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container feature-grid">
+        <div class="feature">
+                <h4>Why Keystone</h4>
+                <p class="text-muted">
+                    Built for stability, clarity and control.
+                </p>
+            </div>
+
+
+        <div class="feature">
+                    <h4>Plugin-first architecture</h4>
+                    <p class="text-muted">
+                        Pages, Media, Menus and more are isolated plugins.
+                        No tight coupling, no surprises.
+                    </p>
+                </div>
+
+
+        <div class="feature">
+                    <h4>Secure by default</h4>
+                    <p class="text-muted">
+                        CSRF protection, explicit policies, no magic globals.
+                        Designed with security as a baseline.
+                    </p>
+                </div>
+
+
+        <div class="feature">
+                    <h4>Developer-friendly</h4>
+                    <p class="text-muted">
+                        Slim 4, PHP-DI, Twig, migrations and clean domain
+                        boundaries.
+                    </p>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <h3 class="fw-semibold">Built to last</h3>
+                <p class="text-muted">
+                    Keystone avoids trends and abstractions that age poorly.
+                    It focuses on explicit architecture, predictable behavior
+                    and long-term maintainability.
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">✔ Clear separation of concerns</li>
+                    <li class="list-group-item">✔ No hidden conventions</li>
+                    <li class="list-group-item">✔ Production-grade defaults</li>
+                    <li class="list-group-item">✔ Designed for teams & agencies</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -13,9 +13,22 @@ use Slim\Exception\HttpNotFoundException;
 use Keystone\Core\Http\Exception\ForbiddenException;
 use Keystone\Http\Middleware\SessionMiddleware;
 use Keystone\Http\Middleware\CurrentUserMiddleware;
+use Keystone\Http\Middleware\DomainLocaleMiddleware;
 use Keystone\Http\Error\ErrorHandler;
 use Keystone\Core\Setup\InstallerKernel;
 use Keystone\Core\Setup\Step;
+use Keystone\Domain\Menu\Service\LinkResolver;
+use Keystone\Domain\User\CurrentUser;
+use Keystone\Http\Middleware\RequirePolicy;
+use Keystone\Core\Auth\PolicyResolver;
+
+use Keystone\Core\Plugin\PluginDiscovery;
+use Keystone\Core\Plugin\PluginSyncService;
+use Keystone\Core\Plugin\PluginLoader;
+
+use Keystone\I18n\LocaleContext;
+use Keystone\I18n\DomainLocaleResolver;
+use Keystone\I18n\Translator;
 
 use Throwable;
 // --------------------------------------------------
@@ -58,6 +71,15 @@ $container->set(
         migrationPath: BASE_PATH . '/database/migrations'
     )
 );
+
+$container->set(LocaleContext::class, function () {
+    return new LocaleContext($_ENV['DEFAULT_LOCALE'] ?? 'en_US');
+});
+
+$container->set(DomainLocaleResolver::class, function ($c) {
+    return new DomainLocaleResolver($c->get('settings')['i18n']['domains']);
+});
+
 $container->set(InstallerKernel::class, function ($c) {
     return new InstallerKernel([
         $c->get(Step\CheckEnvironmentStep::class),
@@ -77,6 +99,14 @@ $container->set(UpdaterKernel::class, function ($c) {
     );
 });
 
+$container->set(
+    RequirePolicy::class,
+    fn ($c) => new RequirePolicy(
+        $c->get(PolicyResolver::class),
+        $c->get(CurrentUser::class),
+        $c->get(LoggerInterface::class)
+    )
+);
 
 
 // --------------------------------------------------
@@ -84,6 +114,30 @@ $container->set(UpdaterKernel::class, function ($c) {
 // --------------------------------------------------
 AppFactory::setContainer($container);
 $app = AppFactory::create();
+
+/** @var LinkResolver $linkResolver */
+$linkResolver = $container->get(LinkResolver::class);
+
+/**
+ * Externe URLs (literal)
+ */
+$linkResolver->register('url', function ($item) {
+    return $item->linkTarget();
+});
+
+/**
+ * Interne Slim routes (by name)
+ */
+$linkResolver->register('route', function ($item) use ($app) {
+    try {
+        return $app
+            ->getRouteCollector()
+            ->getRouteParser()
+            ->urlFor($item->linkTarget());
+    } catch (\Throwable) {
+        return '#';
+    }
+});
 
 //
 // Define the used version of Keystone CMS
@@ -107,7 +161,12 @@ define('KEYSTONE_VERSION', $manifest['version']);
 // --------------------------------------------------
 $app->add(CurrentUserMiddleware::class);
 
+$app->addBodyParsingMiddleware();
+
 $app->add(SessionMiddleware::class);
+
+$app->add(DomainLocaleMiddleware::class);
+
 // --------------------------------------------------
 // 6. Routing middleware (verplicht in Slim 4)
 // --------------------------------------------------
@@ -133,6 +192,22 @@ $errorMiddleware->setDefaultErrorHandler(
     $container->get(ErrorHandler::class)
 );
 
+
+// --------------------------------------------------
+// 9. LOAD PLUGINS (Pages, later Blog, etc.)
+// --------------------------------------------------
+$discovery = $container->get(PluginDiscovery::class);
+$descriptors = $discovery->discover();
+
+$container
+    ->get(PluginSyncService::class)
+    ->sync($descriptors);
+
+$container
+    ->get(PluginLoader::class)
+    ->load($app, $descriptors);
+
+
 // --------------------------------------------------
 // 8. CORE ROUTES (meest specifiek)
 // --------------------------------------------------
@@ -143,14 +218,17 @@ require BASE_PATH . '/app/Http/Routes/auth.php';
 // --------------------------------------------------
 // 8. CATCH-ALL ROUTES (ALTIJD LAATST)
 // --------------------------------------------------
+require BASE_PATH . '/app/Http/Routes/themes.php';
+require BASE_PATH . '/app/Http/Routes/roles.php';
 require BASE_PATH . '/app/Http/Routes/admin.php';
 require BASE_PATH . '/app/Http/Routes/account.php';
 require BASE_PATH . '/app/Http/Routes/public.php';
 
-// --------------------------------------------------
-// 9. LOAD PLUGINS (Pages, later Blog, etc.)
-// --------------------------------------------------
-$container->get(\Keystone\Core\Plugin\PluginLoader::class)->load($app);
+// $roleSeeder = $container->get(\Keystone\Core\Auth\RoleTemplateSeeder::class);
+// $policySeeder = $container->get(\Keystone\Core\Auth\PolicySeeder::class);
+
+// $policySeeder->seed(require BASE_PATH . '/config/policies.php');
+// $roleSeeder->seed(require BASE_PATH . '/config/role_templates.php');
 
 return $app;
 ?>

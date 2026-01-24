@@ -1,0 +1,22 @@
+{% extends "@Theme/base.twig" %}
+
+{% block main %}
+<main class="layout layout-default">
+    <div class="container">
+
+        <article class="page page-default">
+            {% for block in page.blocks %}
+                {{ block.render()|raw }}
+            {% endfor %}
+
+            {% if page.content_html %}
+
+            {{ page.content_html | raw }}
+
+            {% endif %}
+            
+        </article>
+
+    </div>
+</main>
+{% endblock %}

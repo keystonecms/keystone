@@ -6,8 +6,7 @@ namespace Keystone\Core\Setup\Step;
 
 use Keystone\Core\Setup\InstallerState;
 
-interface InstallerStepInterface
-{
+interface InstallerStepInterface {
     public function run(InstallerState $state): void;
 }
 

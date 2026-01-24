@@ -1,0 +1,35 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block title %}Policies{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <h1 class="h3 mb-4">Policies</h1>
+
+    {% for category, grouped in policies %}
+        <div class="mb-5">
+            <h6 class="text-uppercase text-muted mb-3">
+                {{ category }}
+            </h6>
+
+            <div class="row g-3">
+                {% for policy in grouped %}
+                    <div class="col-12 col-md-6 col-lg-4">
+                       <div class="form-check bg-light rounded px-5 py-2 h-100 border">
+                            <strong>{{ policy.key_name }}</strong>
+
+                            {% if policy.description %}
+                                <div class="text-muted small mt-1">
+                                    {{ policy.description }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

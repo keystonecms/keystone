@@ -22,10 +22,18 @@ final class CsrfMiddleware implements MiddlewareInterface {
         RequestHandlerInterface $handler
     ): ResponseInterface {
 
+
+if (
+    $request->getUri()->getPath() === '/admin/blocks/preview'
+) {
+    return $handler->handle($request);
+}
+
+
         if (in_array($request->getMethod(), ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
 
             $data = (array) $request->getParsedBody();
-            $token = $data['_csrf_token'] ?? null;
+            $token = $data['_csrf_token'] ?? $request->getHeaderLine('X-CSRF-Token') ?? null;
 
             if (!$this->csrf->validate($token)) {
                 return $this->forbidden();
@@ -37,7 +45,7 @@ final class CsrfMiddleware implements MiddlewareInterface {
 
 private function forbidden(): never
 {
-    throw new \Keystone\Core\Http\Exception\ForbiddenException(
+    throw new \Keystone\Http\Exception\ForbiddenException(
         'Invalid CSRF token'
     );
 }

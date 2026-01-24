@@ -1,0 +1,37 @@
+<html>
+    <head>
+
+{% for tag in result.meta %}
+    {% if tag.name == 'title' %}
+        <title>{{ tag.content }}</title>
+    {% elseif tag.name %}
+        <meta name="{{ tag.name }}" content="{{ tag.content }}">
+    {% elseif tag.property %}
+        <meta property="{{ tag.property }}" content="{{ tag.content }}">
+    {% endif %}
+{% endfor %}
+
+
+{% for style in result.styles %}
+    {% if style.href %}
+        <link rel="stylesheet" href="{{ style.href }}">
+    {% else %}
+        <style>{{ style.inline|raw }}</style>
+    {% endif %}
+{% endfor %}
+</html>
+
+<body>
+{% for script in result.scripts %}
+    {% if script.src %}
+        <script
+            src="{{ script.src }}"
+            {% if script.async %}async{% endif %}
+            {% if script.defer %}defer{% endif %}
+        ></script>
+    {% else %}
+        <script>{{ script.inline|raw }}</script>
+    {% endif %}
+{% endfor %}
+</body>
+</html>

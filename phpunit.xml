@@ -22,10 +22,14 @@
         <testsuite name="Unit">
             <directory suffix="Test.php">tests/Unit</directory>
             <directory suffix="Test.php">tests/Auth</directory>
+            <directory suffix="Test.php">tests/Http</directory>
         </testsuite>
 
         <testsuite name="Integration">
             <directory suffix="Test.php">tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Plugins">
+            <directory>plugins/*/tests</directory>
         </testsuite>
     </testsuites>
 

@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpNotFoundException;
+use Keystone\Core\System\ErrorReporter;
 use Slim\Views\Twig;
 use Throwable;
 
@@ -17,7 +18,8 @@ final class ErrorHandler {
     public function __construct(
         private Twig $twig,
         private LoggerInterface $logger,
-        private ResponseFactoryInterface $responseFactory
+        private ResponseFactoryInterface $responseFactory,
+        private ErrorReporter $errorReporter 
     ) {}
 
     /**
@@ -45,6 +47,14 @@ final class ErrorHandler {
         $this->logger->error($exception->getMessage(), [
             'exception' => $exception,
             'path'      => (string) $request->getUri(),
+        ]);
+
+        // log ALLES naar de database
+        $this->errorReporter->report($exception, [
+            'error_id' => $errorId,
+            'path'     => (string) $request->getUri(),
+            'method'   => $request->getMethod(),
+            'user_id'  => $this->currentUser?->id(),
         ]);
 
         return $this->internalError($request, $exception, $displayErrorDetails);
@@ -113,7 +123,6 @@ private function internalError(
             'method' => $request->getMethod(),
         ]
     );
-
     // AJAX → JSON
     if ($this->isAjax($request)) {
         return $this->json(

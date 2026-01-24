@@ -1,14 +1,12 @@
 <?php
 
+namespace Keystone\Tests\Http;
 
-namespace Tests\Http;
-
-use Tests\Tester;
-
+use Keystone\Tests\TestCase;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
-final class ErrorHandlerTest extends Tester
-{
+final class ErrorHandlerTest extends TestCase {
+
     public function test_unknown_route_returns_404(): void
     {
         $app = $this->createApp();
@@ -21,7 +19,7 @@ final class ErrorHandlerTest extends Tester
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function test_forbidden_returns_403(): void
+    public function test_guest_is_redirected_to_login_when_accessing_admin(): void
     {
         $app = $this->createApp();
 
@@ -37,5 +35,3 @@ final class ErrorHandlerTest extends Tester
         );
     }
 }
-
-?>

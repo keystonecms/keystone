@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Admin – Keystone{% endblock %}</title>
+
+<link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <link rel="stylesheet" href="/assets/css/admin.css">
+   {# Plugin / page specific CSS #}
+    {% block styles %}{% endblock %}
+
+<link rel="icon" href="/assets/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png">
+<link rel="manifest" href="/assets/favicon/site.webmanifest">
+
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="admin-sidebar">
+        <img src="/assets/favicon/favicon-32x32.png" class="img-fluid"> <h1 class="admin-logo d-inline text-center">{{ sitename }}</h1>
+
+        {% block navigation %}
+
+             <nav class="sidebar mt-5">
+<ul class="nav nav-pills flex-column gap-1">
+
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/dashboard">{{ 'menu.dashboard'| trans| capitalize }}</a></li>
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/users">{{ 'menu.users'| trans| capitalize }}</a></li>
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/roles">{{ 'menu.roles'| trans| capitalize }}</a></li>
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/menus">{{ 'menu.menu'| trans| capitalize }}</a></li>
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/plugins">{{ 'menu.plugins'| trans| capitalize }}</a></li>
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/themes">{{ 'menu.themes'| trans| capitalize }}</a></li>
+
+
+                {% for item in admin_menu %}
+
+                     <li class="nav-item">
+
+                        <a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}"
+                        href="{{ path(item.route) }}">
+                            <i class="{{ item.icon }} me-2"></i>
+                            {{ item.label }}
+                        </a>
+
+                        {% if item.children is defined %}
+                            <ul class="nav flex-column ms-3">
+                                {% for child in item.children %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ child.active ? 'active fw-semibold bg-secondary' : '' }}"
+                                        href="{{ path(child.route) }}">
+                                            <i class="{{ child.icon }} me-2"></i>
+                                            {{ child.label }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                    </li>
+                {% endfor %}
+
+    </ul>
+            </nav>
+    </aside>
+                {% endblock %}
+
+
+    <section class="admin-main">
+ <header class="admin-header">
+    <div class="admin-header-left">
+        {% block header %}{% endblock %}
+    </div>
+
+    <div class="admin-header-right">
+        {% include "@core/admin/partials/user-menu.twig" %}
+    </div>
+</header>
+
+{% if update.has_update %}
+<div class="alert alert-warning d-flex justify-content-between align-items-center">
+    <div>
+        <strong>Update beschikbaar</strong><br>
+        Huidig: {{ update.current }} →
+        Nieuw: {{ update.latest }}
+    </div>
+
+    <div class="btn-group">
+        <a href="/admin/system/update"
+           class="btn btn-sm btn-outline-primary">
+            Details
+        </a>
+
+        <button
+            class="btn btn-sm btn-primary"
+            data-action="dry-run">
+            Dry-run
+        </button>
+    </div>
+</div>
+{% endif %}
+
+
+        <main class="admin-content">
+            {% block content %}{% endblock %}
+        </main>
+    </section>
+
+</div>
+
+<div class="admin-footer">
+    <div class="admin-footer-inner">
+        <span class="text-muted small">
+            © {{ "now"|date("Y") }}
+        </span>
+<div class="d-flex align-items-center gap-2 text-muted small">
+            <img
+                src="/assets/favicon/favicon.svg"
+                alt="Keystone CMS"
+                width="16"
+                height="16"
+                style="display: block;"
+            >
+            <span>
+                Powered by Keystone CMS v{{ keystone.version }}
+            </span>
+        </div>
+
+    </div>
+</div>
+
+{# Plugin / page specific JS #}
+    {% block scripts %}{% endblock %}
+
+</body>
+
+</body>
+</html>

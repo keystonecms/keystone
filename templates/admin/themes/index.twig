@@ -1,0 +1,64 @@
+{% extends "@pages/admin/layout.twig" %}
+
+{% block content %}
+<h1>Themes</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Versie</th>
+            <th>Status</th>
+            <th></th>
+            <th>Verwijderen</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for theme in themes %}
+            <tr>
+                <td>{{ theme.name }}</td>
+                <td>{{ theme.manifest.version }}</td>
+                <td>
+                    {% if theme.name == active %}
+                        <strong>Actief</strong>
+                    {% else %}
+                        Inactief
+                    {% endif %}
+                </td>
+                <td>
+                    {% if theme.name != active %}
+                        <form method="post" action="/admin/themes/activate">
+                            {{ csrf() }}
+                            <input type="hidden" name="theme" value="{{ theme.name }}">
+                            <button class="btn btn-primary btn-sm">Activeren</button>
+                        </form>
+                    {% endif %}
+                </td>
+                <td>
+
+<form method="post" action="/admin/themes/uninstall">
+    {{ csrf() }}
+    <input type="hidden" name="theme" value="{{ theme.name }}">
+
+    <button class="btn btn-danger btn-sm">
+        Verwijderen
+    </button>
+</form>
+
+
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+<form method="post" enctype="multipart/form-data" action="/admin/themes/upload">
+    {{ csrf() }}
+    <input type="file" name="theme" accept=".zip" required>
+    <button class="btn btn-primary btn-sm">Theme uploaden</button>
+</form>
+
+
+{% endblock %}
