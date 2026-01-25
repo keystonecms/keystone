@@ -104,7 +104,7 @@ Dit is een extreem solide basis — hier ga je jaren plezier van hebben.
 met:
 namespace-regels
 namespace begint met Keystone
-namespace naam plugins is Keystone\Plugins
+namespace naam plugins is Keystone\Plugin
 graag namespaces en use statements bijvoegen
 plugin lifecycle
 DI afspraken

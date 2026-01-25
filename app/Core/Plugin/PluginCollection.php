@@ -5,7 +5,7 @@ namespace Keystone\Core\Plugin;
 
 use Keystone\Core\Plugin\PluginInterface;
 
-final class PluginRegistry
+final class PluginCollection
 {
     private array $plugins = [];
 
