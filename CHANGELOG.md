@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/keystonecms/keystone/compare/v1.0.1...v1.1.0) (2026-01-25)
+
+
+### Features
+
+* plugin install via dashboard by composer integrated, remove still needs to be implemented ([be5ad5f](https://github.com/keystonecms/keystone/commit/be5ad5f20c9a0c05d93ff97051ac8eb19531097c))
+
 ## [1.0.1](https://github.com/keystonecms/keystone/compare/v1.0.0...v1.0.1) (2026-01-25)
 
 
