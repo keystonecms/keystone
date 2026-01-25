@@ -67,6 +67,10 @@ use Keystone\Infrastructure\Persistence\PolicyRepository;
 use Keystone\Http\Session\SessionInterface;
 use Keystone\Infrastructure\Session\PhpSession;
 
+use Keystone\Core\Plugin\PluginDiscoveryInterface;
+use Keystone\Core\Plugin\PluginSyncService;
+use Keystone\Core\Plugin\PluginSyncServiceInterface;
+
 use Keystone\Core\Mail\MailerInterface;
 use Keystone\Core\Mail\NullMailer;
 
@@ -91,8 +95,16 @@ return [
             ]
         );
 
-        // 🔒 Forceer UTC voor deze database-sessie
-        $pdo->exec("SET time_zone = '+00:00'");
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+        if ($driver === 'mysql') {
+            // Forceer UTF-8
+            $pdo->exec("SET NAMES utf8mb4");
+
+            // Forceer UTC voor deze database-sessie
+            $pdo->exec("SET time_zone = '+00:00'");
+        }
+
 
         return $pdo;
         },
@@ -180,7 +192,7 @@ return [
     //         BASE_PATH . '/plugins'
     //     );
     // },
-    PluginDiscovery::class => DI\autowire(),
+    // PluginDiscovery::class => DI\autowire(),
     PluginLoader::class => DI\autowire(),
     Translator::class => DI\autowire(),
     PasswordHasher::class => DI\create(),
@@ -193,8 +205,10 @@ return [
     CsrfMiddleware::class => DI\autowire(),
 
 /**
- * autowire statements
+ * autowire statements 
  */
+   PluginSyncServiceInterface::class => DI\autowire(PluginSyncService::class),
+   PluginDiscoveryInterface::class => DI\autowire(PluginDiscovery::class),
    MailerInterface::class => DI\autowire(NullMailer::class),
    TwoFactorHandlerInterface::class => DI\autowire(NullTwoFactorHandler::class),
    PluginRepositoryInterface::class => DI\autowire(PluginRepository::class),

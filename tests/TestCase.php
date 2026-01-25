@@ -27,7 +27,7 @@ abstract class TestCase extends PHPUnitTestCase {
         }
 
     protected function createApp(): App {
-        return require __DIR__ . '/../bootstrap/app.php';
+        return require __DIR__ . '/../bootstrap/app_test.php';
     }
 }
 
