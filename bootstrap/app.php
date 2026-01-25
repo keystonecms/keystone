@@ -155,7 +155,9 @@ $manifest = json_decode(
     JSON_THROW_ON_ERROR
 );
 
-define('KEYSTONE_VERSION', $manifest['version']);
+if (!defined('KEYSTONE_VERSION')) {
+    define('KEYSTONE_VERSION', '1.0.0');
+}
 // --------------------------------------------------
 // 3. Start session (VOOR alles wat auth / csrf doet)
 // --------------------------------------------------

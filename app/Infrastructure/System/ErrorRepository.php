@@ -28,12 +28,12 @@ public function stats(): array
     public function create(array $data): void {
         $stmt = $this->pdo->prepare(
             'INSERT INTO system_errors (
-                level, message, exception_class,
+                level, errorid, message, exception_class,
                 file, line, trace,
                 request_uri, method, user_id, plugin,
                 resolved, created_at
             ) VALUES (
-                :level, :message, :exception_class,
+                :level, :errorid, :message, :exception_class,
                 :file, :line, :trace,
                 :request_uri, :method, :user_id, :plugin,
                 0, NOW()
@@ -42,6 +42,7 @@ public function stats(): array
 
         $stmt->execute([
             'level'           => $data['level'] ?? 'error',
+            'errorid'           => $data['errorid'] ?? null,
             'message'         => $data['message'],
             'exception_class' => $data['exception_class'] ?? null,
             'file'            => $data['file'] ?? null,

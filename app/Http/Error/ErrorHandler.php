@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Keystone\Http\Error;
 
-use Keystone\Http\Exception\ForbiddenException;
+use Slim\Exception\HttpForbiddenException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -15,11 +15,15 @@ use Slim\Views\Twig;
 use Throwable;
 
 final class ErrorHandler {
+
+private $errorId;
+
     public function __construct(
         private Twig $twig,
         private LoggerInterface $logger,
         private ResponseFactoryInterface $responseFactory,
-        private ErrorReporter $errorReporter 
+        private ErrorReporter $errorReporter,
+        private ?User $currentUser = null 
     ) {}
 
     /**
@@ -33,13 +37,16 @@ final class ErrorHandler {
         bool $logErrorDetails
     ): ResponseInterface {
 
+        // Unieke foutcode
+        $this->setErrorId($this->generateErrorId());
+
         // 404 Not Found
         if ($exception instanceof HttpNotFoundException) {
             return $this->notFound($request);
         }
 
         // 403 Forbidden
-        if ($exception instanceof ForbiddenException) {
+        if ($exception instanceof HttpForbiddenException) {
             return $this->forbidden($request);
         }
 
@@ -51,7 +58,7 @@ final class ErrorHandler {
 
         // log ALLES naar de database
         $this->errorReporter->report($exception, [
-            'error_id' => $errorId,
+            'error_id' => (string) $this->getErrorId(),
             'path'     => (string) $request->getUri(),
             'method'   => $request->getMethod(),
             'user_id'  => $this->currentUser?->id(),
@@ -110,8 +117,8 @@ private function internalError(
     bool $displayErrorDetails
 ): ResponseInterface {
 
-    // Unieke foutcode
-    $errorId = $this->generateErrorId();
+  $errorId = $this->getErrorId();
+
 
     // Log ALLES met dezelfde code
     $this->logger->error(
@@ -127,6 +134,7 @@ private function internalError(
     if ($this->isAjax($request)) {
         return $this->json(
             500,
+            $errorId,
             sprintf(
                 'Er ging iets mis. Referentie: %s',
                 $errorId
@@ -191,6 +199,14 @@ private function internalError(
     }
     private function generateErrorId(): string {
     return 'ERR-' . strtoupper(bin2hex(random_bytes(8)));
+    }
+
+    private function getErrorId() {
+        return $this->errorId;
+    }
+
+    private function setErrorId($errorId) {
+        $this->errorId = $errorId;
     }
 
 }

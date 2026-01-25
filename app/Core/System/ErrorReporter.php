@@ -13,8 +13,10 @@ final class ErrorReporter {
 
     public function report(Throwable $e, array $context = []): void
     {
+
         $this->errors->create([
             'level'           => 'error',
+            'errorid'         => $context['error_id'] ?? null,
             'message'         => $e->getMessage(),
             'exception_class'=> $e::class,
             'file'            => $e->getFile(),
