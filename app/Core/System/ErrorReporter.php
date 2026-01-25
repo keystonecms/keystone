@@ -4,9 +4,10 @@ namespace Keystone\Core\System;
 
 use Throwable;
 use Keystone\Core\System\ErrorRepositoryInterface;
+use Keystone\Core\System\ErrorReporterInterface;
 
 final class ErrorReporter {
-    
+   
     public function __construct(
         private ErrorRepositoryInterface $errors
     ) {}

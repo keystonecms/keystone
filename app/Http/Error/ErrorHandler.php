@@ -162,6 +162,10 @@ private function internalError(
         string $code,
         string $message
     ): ResponseInterface {
+
+
+
+    
         return $this->twig->render(
             $this->responseFactory->createResponse($status),
             'errors/error.twig',
