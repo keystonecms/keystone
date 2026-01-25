@@ -64,6 +64,7 @@
         class="d-inline"
     >
         {{ csrf() }}
+        <input type="hidden" name="package" value="{{ plugin.package }}">
         <button class="btn btn-sm btn-primary">
             Install
         </button>

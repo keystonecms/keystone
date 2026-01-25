@@ -72,6 +72,8 @@ public function fetch(): array {
     file_put_contents($tmpFile, $json);
     rename($tmpFile, $cacheFile);
 
+dd($data['plugins']);
+
     return $data['plugins'];
 }
 

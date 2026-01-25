@@ -26,7 +26,15 @@ interface PluginRegistryInterface {
 
     public function isEnabled(string $slug): bool;
 
+    public function install(PluginDescriptor $plugin): void;
+
     public function updateVersion(string $slug, string $version): void;
+
+    public function existsByPackage(string $package): bool;
+
+    public function removeByPackage(string $package): void;
+
+    public function getByPackage(string $package): ?array;
 
     public function get(string $slug): array;
 

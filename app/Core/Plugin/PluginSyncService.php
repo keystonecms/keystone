@@ -18,9 +18,10 @@ public function sync(array $discovered): void {
 
     foreach ($discovered as $plugin) {
 
-        if ($this->repository->get($plugin->slug)) {
+        if ($this->repository->getByPackage($plugin->package)) {
             continue;
         }
+
 
 
         $this->repository->install($plugin);

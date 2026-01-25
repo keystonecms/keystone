@@ -34,7 +34,9 @@ public function install(
     array $args
 ): ResponseInterface {
     try {
-        $this->pluginInstaller->install($args['name']);
+        $data = $request->getParsedBody() ?? [];
+
+        $this->pluginInstaller->install($data['package'] ?? null);
 
     } catch (\Throwable $e) {
    return $this->json($response, [

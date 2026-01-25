@@ -7,6 +7,8 @@ namespace Keystone\Core\Plugin;
 use PDO;
 use RuntimeException;
 use Keystone\Core\Plugin\PluginRegistryInterface;
+use Keystone\Core\Plugin\PluginDescriptor;
+use DateTimeImmutable;
 
 final class PluginRegistry implements PluginRegistryInterface {
 
@@ -26,8 +28,49 @@ public function allIndexedByPackage(): array
     return $indexed;
 }
 
+public function install(PluginDescriptor $plugin): void {
+        $now = new DateTimeImmutable();
 
-    public function exists(string $slug): bool {
+        $stmt = $this->db->prepare(
+            'INSERT INTO plugins (name, slug, package, version, enabled, load_order, installed_at, updated_at)
+             VALUES (:name, :slug, :package, :version, 0, :load_order, :now, :now)'
+        );
+
+        $stmt->execute([
+            'name'    => $plugin->name,
+            'slug'     => $plugin->slug,
+            'package'  => $plugin->package,
+            'version' => $plugin->version,
+            'now'     => $now->format('Y-m-d H:i:s'),
+            'enabled' => 0,
+            'load_order' => $plugin->loadOrder,
+        ]);
+    }
+
+
+
+public function existsByPackage(string $package): bool
+{
+    $stmt = $this->db->prepare(
+        'SELECT 1 FROM plugins WHERE package = :package LIMIT 1'
+    );
+    $stmt->execute(['package' => $package]);
+
+    return (bool) $stmt->fetchColumn();
+}
+
+
+public function removeByPackage(string $package): void
+{
+    $stmt = $this->db->prepare(
+        'DELETE FROM plugins WHERE package = :package'
+    );
+    $stmt->execute(['package' => $package]);
+}
+/**
+ * Does a plugin exists by slug
+ */
+public function exists(string $slug): bool {
         $stmt = $this->db->prepare(
             'SELECT COUNT(*) FROM plugins WHERE slug = ?'
         );
@@ -107,9 +150,16 @@ public function enable(string $slug): void {
         return (int) $stmt->fetchColumn();
     }
 
+    public function getByPackage(string $package): ?array {
+    $stmt = $this->db->prepare(
+        'SELECT * FROM plugins WHERE package = :package LIMIT 1'
+    );
+    $stmt->execute(['package' => $package]);
 
-    public function get(string $slug): array
-    {
+    return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+}
+
+public function get(string $slug): array {
         $stmt = $this->db->prepare(
             'SELECT * FROM plugins WHERE slug = ?'
         );

@@ -5,11 +5,10 @@ namespace Keystone\Core\Plugin;
 
 use Keystone\Core\Plugin\PluginInterface;
 
-final class PluginCollection
-{
+final class PluginCollection {
     private array $plugins = [];
 
-    public function add(PluginInterface $plugin): void
+    public function add(PluginInterface $plugin): void 
     {
         $this->plugins[$plugin->getName()] = [
             'name'        => $plugin->getName(),

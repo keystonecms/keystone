@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00e92a1bdcbb927af5afd5d53a6e5860",
+    "content-hash": "e8aa59f4e4b9573c85da88c6d0055a77",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -685,6 +685,37 @@
                 }
             ],
             "time": "2025-08-23T21:21:41+00:00"
+        },
+        {
+            "name": "keystone/plugin-pages",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/keystonecms/plugin-pages.git",
+                "reference": "fb8ab0dd78d0cb025e5dad79f5e41a3a0034f8a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/keystonecms/plugin-pages/zipball/fb8ab0dd78d0cb025e5dad79f5e41a3a0034f8a0",
+                "reference": "fb8ab0dd78d0cb025e5dad79f5e41a3a0034f8a0",
+                "shasum": ""
+            },
+            "type": "keystone-plugin",
+            "extra": {
+                "keystone": {
+                    "plugin-class": "Keystone\\Plugin\\Pages\\Plugin"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Keystone\\Plugin\\Pages\\": "src/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/keystonecms/plugin-pages/tree/v1.0.2",
+                "issues": "https://github.com/keystonecms/plugin-pages/issues"
+            },
+            "time": "2026-01-25T19:05:23+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -3036,6 +3067,71 @@
                 }
             ],
             "time": "2024-09-09T11:45:10+00:00"
+        },
+        {
+            "name": "symfony/process",
+            "version": "v7.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/process.git",
+                "reference": "626f07a53f4b4e2f00e11824cc29f928d797783b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/process/zipball/626f07a53f4b4e2f00e11824cc29f928d797783b",
+                "reference": "626f07a53f4b4e2f00e11824cc29f928d797783b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Process\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Executes commands in sub-processes",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/process/tree/v7.4.4"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-01-20T09:23:51+00:00"
         },
         {
             "name": "symfony/service-contracts",
