@@ -1,3 +1,23 @@
+# 1.0.0 (2026-01-25)
+
+
+### Bug Fixes
+
+* added errorid to error log ([01bea41](https://github.com/keystonecms/keystone/commit/01bea41b96c13e0e075cd138965b1926a7b7de27))
+* changed test suite use own app ([d93af12](https://github.com/keystonecms/keystone/commit/d93af1202be21c4763e516853e91a936ca276fc0))
+* changed the tests for middleware ([daf4723](https://github.com/keystonecms/keystone/commit/daf47237eb3d01b495617071b8f1240db1e95927))
+* composer.json error in github ([ee656bf](https://github.com/keystonecms/keystone/commit/ee656bfb70817ba2dd423c23b2180eb3677af05a))
+* composer.json file deleted comma ([85ec8bb](https://github.com/keystonecms/keystone/commit/85ec8bb2537bd6835aa6eacd62d50b7f1d4e51fe))
+* fixed and added some tests ([cb4136c](https://github.com/keystonecms/keystone/commit/cb4136cd19ee1b2afcde57b6d1d3741633e7b1ba))
+* run composer update for lock file ([89ff612](https://github.com/keystonecms/keystone/commit/89ff6126b9f594ae46f34e65e6d8cbd804115abc))
+
+
+### Features
+
+* added releaserc.json ([93d0592](https://github.com/keystonecms/keystone/commit/93d059202ce4da6eca845fd7720b68f2e7c9d7b7))
+* changed the versions file ([c4f9e5d](https://github.com/keystonecms/keystone/commit/c4f9e5df0e77c808007dae8889d9651c6edfc4b7))
+* start with plugin marketplace and fixed some core troubles ([96785a5](https://github.com/keystonecms/keystone/commit/96785a5a14fe06c8073db33e896c278aa913fca9))
+
 ## Plugin installer (2026-01-24)
 - Created a composer plugin installer
 - Enable/disable plugins via admin GUI
@@ -53,5 +73,3 @@ Started with the first plugin functionality (pages).
 Started with the core functionality of the Keystone CMS.
 
 New idea CMS with plugin functionality based on Slim 4, Twig template system, Dependecy injection and autowiring. Decided on name and colors. Keystone CMS project initiated.
-
-
