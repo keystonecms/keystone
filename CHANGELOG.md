@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/keystonecms/keystone/compare/v1.0.0...v1.0.1) (2026-01-25)
+
+
+### Bug Fixes
+
+* fixed composer.json and switched to composer install ([f39a830](https://github.com/keystonecms/keystone/commit/f39a8304200a310ea71827dd268c89dc37566b02))
+
 # 1.0.0 (2026-01-25)
 
 
