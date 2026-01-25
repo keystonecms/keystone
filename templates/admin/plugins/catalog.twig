@@ -7,6 +7,9 @@
   Browse and install available Keystone plugins.
 </p>
 
+<div class="alert alert-success d-none"></div>
+<div class="alert alert-danger d-none"></div>
+
 <div class="row">
   {% for plugin in catalog %}
     {% set installedPlugin = installed[plugin.package] ?? null %}
@@ -15,6 +18,10 @@
       <div class="card mb-3 h-100">
         <div class="card-body">
           <h5 class="card-title">{{ plugin.name }}</h5>
+
+          <span class="badge bg-warning">
+        {{ plugin.version }} → {{ installed[plugin.slug].version }}
+        </span>
 
           <p class="card-text">
             {{ plugin.description }}
@@ -44,14 +51,22 @@
               </a>
             {% endif %}
           {% else %}
-            <form method="post"
-                  action="/admin/plugins/install"
-                  class="d-inline">
-              {{ csrf() }}
-              <input type="hidden" name="package" value="{{ plugin.package }}">
-              <button class="btn btn-sm btn-success">
-                Install
-              </button>
+
+{% if installed[plugin.slug] is not defined %}
+    <form
+        method="post"
+        name="form-plugin-install"
+        id="form-plug-install"
+        action="{{url}}/admin/plugins/{{ plugin.slug }}/install"
+        class="d-inline"
+    >
+        {{ csrf() }}
+        <button class="btn btn-sm btn-primary">
+            Install
+        </button>
+    </form>
+{% endif %}
+
             </form>
           {% endif %}
         </div>
@@ -62,3 +77,7 @@
 {% endblock %}
 
 
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/multiform-ajax.js"></script>
+{% endblock %}

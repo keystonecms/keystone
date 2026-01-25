@@ -5,17 +5,18 @@ namespace Keystone\Core\Plugin;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
-use Keystone\Core\Plugin\PluginDownloader;
-use Keystone\Core\Plugin\PluginFilesystem;
-use Keystone\Core\Plugin\PluginRegistry;
+use Keystone\Core\Plugin\Download\PluginDownloader;
+use Keystone\Core\Plugin\Filesystem\PluginFilesystem;
+use Keystone\Core\Plugin\PluginRegistryInterface;
 use Keystone\Core\Plugin\Validation\PluginEntryValidator;
 
 
 final class PluginInstallerService {
+
     public function __construct(
         private PluginDownloader $downloader,
         private PluginFilesystem $filesystem,
-        private PluginRegistry $registry,
+        private PluginRegistryInterface $registry,
         private ContainerInterface $container,
         private PluginEntryValidator $validator
     ) {}

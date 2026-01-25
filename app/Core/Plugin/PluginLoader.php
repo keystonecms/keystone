@@ -9,14 +9,14 @@ use Slim\App;
 use Keystone\Core\Migration\MigrationInterface;
 use Keystone\Core\Migration\MigrationRunner;
 use RuntimeException;
-
+use Keystone\Core\Plugin\PluginRegistryInterface;
 
 final class PluginLoader {
 
     public function __construct(
         private ContainerInterface $container,
         private LoggerInterface $logger,
-        private PluginRepository $pluginRepository
+        private PluginRegistryInterface $pluginRepository
     ) {}
 
     /**

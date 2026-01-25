@@ -3,12 +3,12 @@
 namespace Keystone\Core\Plugin;
 
 use Keystone\Core\Plugin\PluginSyncServiceInterface;
-use Keystone\Core\Plugin\PluginRepositoryInterface;
+use Keystone\Core\Plugin\PluginRegistryInterface;
 
 final class PluginSyncService implements PluginSyncServiceInterface {
     
     public function __construct(
-        private PluginRepositoryInterface $repository
+        private PluginRegistryInterface $repository
     ) {}
 
     /**

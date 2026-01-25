@@ -2,7 +2,6 @@
 
 use Keystone\Http\Controllers\Admin\PluginController;
 use Keystone\Http\Controllers\Admin\PluginCatalogController;
-use Keystone\Http\Controllers\Admin\PluginInstallController;
 
 use Keystone\Http\Middleware\AuthMiddleware;
 use Keystone\Http\Middleware\CsrfMiddleware;
@@ -50,7 +49,7 @@ $app->group('/admin/plugins', function ($group) use ($requirePolicy) {
 
     $group->get('/catalog', PluginCatalogController::class . ':index');
 
-    $group->post('/install', PluginInstallController::class . ':install');
+    $group->post('/{name}/install', PluginController::class . ':install');
 
     $group->post('/{name}/enable', PluginController::class . ':enable');
     $group->post('/{name}/disable', PluginController::class . ':disable');

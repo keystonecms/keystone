@@ -12,12 +12,19 @@ final class Paths {
         return $this->basePath . '/themes';
     }
 
+    public function downloads(): string {
+        return $this->basePath . '/downloads';
+    }
    public function uploads(): string {
         return $this->basePath . '/../public_html/uploads';
     }
 
     public function plugins(): string {
         return $this->basePath . '/plugins';
+    }
+    
+    public function pluginsbackup(): string {
+        return $this->basePath . '/var/plugins';
     }
 
     public function resources(): string {

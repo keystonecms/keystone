@@ -3,13 +3,17 @@
 namespace Keystone\Http\Controllers\Admin;
 
 use Keystone\Core\Plugin\PluginService;
+use Keystone\Core\Plugin\PluginInstallerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Views\Twig;
 
-final class PluginController {
+use Keystone\Http\Controllers\BaseController;
+
+final class PluginController extends BaseController {
     public function __construct(
         private PluginService $plugins,
+        private PluginInstallerService $pluginInstaller,
         private Twig $view
     ) {}
 
@@ -23,6 +27,29 @@ final class PluginController {
             'plugins' => $this->plugins->listPlugins(),
         ]);
     }
+
+public function install(
+    ServerRequestInterface $request,
+    ResponseInterface $response,
+    array $args
+): ResponseInterface {
+    try {
+        $this->pluginInstaller->install($args['name']);
+
+    } catch (\Throwable $e) {
+   return $this->json($response, [
+        'status'  => 'error',
+        'message' => $e->getMessage()
+        ]);
+    }
+
+    return $this->json($response, [
+        'status'  => 'success',
+        'message' => 'Plugin ' . $args['name'] . ' succesvol geinstalleerd.'
+    ]);
+}
+
+
 
     public function enable(
         ServerRequestInterface $request,

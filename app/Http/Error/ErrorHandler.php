@@ -134,7 +134,6 @@ private function internalError(
     if ($this->isAjax($request)) {
         return $this->json(
             500,
-            $errorId,
             sprintf(
                 'Er ging iets mis. Referentie: %s',
                 $errorId

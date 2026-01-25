@@ -70,6 +70,7 @@ use Keystone\Infrastructure\Session\PhpSession;
 use Keystone\Core\Plugin\PluginDiscoveryInterface;
 use Keystone\Core\Plugin\PluginSyncService;
 use Keystone\Core\Plugin\PluginSyncServiceInterface;
+use Keystone\Core\Plugin\PluginRegistryInterface;
 
 use Keystone\Core\Mail\MailerInterface;
 use Keystone\Core\Mail\NullMailer;
@@ -207,6 +208,7 @@ return [
 /**
  * autowire statements 
  */
+   PluginRegistryInterface::class => DI\autowire(PluginRegistry::class),
    PluginSyncServiceInterface::class => DI\autowire(PluginSyncService::class),
    PluginDiscoveryInterface::class => DI\autowire(PluginDiscovery::class),
    MailerInterface::class => DI\autowire(NullMailer::class),
