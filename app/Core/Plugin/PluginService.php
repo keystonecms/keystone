@@ -23,8 +23,8 @@ public function listPlugins(): array
 
     // Indexed by package (Composer truth)
     $installed = [];
-    foreach ($this->repository->all() as $entity) {
-        $installed[$entity->getPackage()] = $entity;
+    foreach ($this->repository->all() as $row) {
+        $installed[$row['package']] = $row;
     }
 
     $result = [];
@@ -36,14 +36,15 @@ public function listPlugins(): array
             'name'        => $plugin->name,
             'package'     => $plugin->package,
             'version'     => $plugin->version,
-            'description' => $plugin->description,
+            'description' => $plugin->description ?? '',
             'installed'   => $db !== null,
-            'enabled'     => $db ? $db->isEnabled() : false,
+            'enabled'     => $db ? (bool) $db['enabled'] : false,
         ];
     }
 
     return $result;
 }
+
 
 public function enable(string $name): void {
         $this->repository->enable($name);

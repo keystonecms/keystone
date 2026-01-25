@@ -4,6 +4,7 @@
   "plugins": [
     {
       "name": "Pages",
+      "slug": "pages",
       "package": "keystone/plugin-pages",
       "description": "Core pages and routing functionality",
       "author": "Keystone CMS",
@@ -14,6 +15,7 @@
     },
     {
       "name": "Auth",
+      "slug": "auth",
       "package": "keystone/plugin-auth",
       "description": "Authentication and account security",
       "author": "Keystone CMS",

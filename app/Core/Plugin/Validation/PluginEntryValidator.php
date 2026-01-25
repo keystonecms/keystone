@@ -13,7 +13,7 @@ final class PluginEntryValidator {
 
     public function validate(string $pluginName, string $pluginPath): void {
         $expectedClass = "Keystone\\Plugin\\{$pluginName}\\Plugin";
-        $expectedFile  = $pluginPath . '/Plugin.php';
+        $expectedFile  = $pluginPath . '/src/Plugin.php';
 
         // Entry file check
         if (!file_exists($expectedFile)) {

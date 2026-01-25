@@ -25,7 +25,6 @@ final class PluginLoader {
     public function load(App $app, array $descriptors): void
     {
 
-
     usort($descriptors, fn ($a, $b) =>
             $a->loadOrder <=> $b->loadOrder
     );
@@ -33,8 +32,13 @@ final class PluginLoader {
 
         foreach ($descriptors as $descriptor) {
 
+$this->logger->debug('Plugin enabled check', [
+    'slug' => $descriptor->slug,
+    'enabled' => $this->pluginRepository->isEnabled($descriptor->slug),
+]);
+
             // alleen enabled plugins laden
-            if (!$this->pluginRepository->isEnabled($descriptor->name)) {
+            if (!$this->pluginRepository->isEnabled($descriptor->slug)) {
                 continue;
             }
 

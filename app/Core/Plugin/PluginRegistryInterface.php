@@ -10,6 +10,8 @@ interface PluginRegistryInterface {
 
     public function register(
         string $slug,
+        string $package,
+        string $name,
         string $version,
         bool $enabled = false
     ): void;
@@ -17,6 +19,8 @@ interface PluginRegistryInterface {
     public function allIndexedByPackage(): array;
 
     public function enable(string $slug): void;
+
+    public function count(): int;
 
     public function disable(string $slug): void;
 

@@ -2,156 +2,167 @@
 
 namespace Keystone\Core\Plugin;
 
-use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
-
-use Keystone\Core\Plugin\Download\PluginDownloader;
-use Keystone\Core\Plugin\Filesystem\PluginFilesystem;
-use Keystone\Core\Plugin\PluginRegistryInterface;
-use Keystone\Core\Plugin\Validation\PluginEntryValidator;
-
+use Keystone\Infrastructure\Paths;
 
 final class PluginInstallerService {
 
     public function __construct(
-        private PluginDownloader $downloader,
-        private PluginFilesystem $filesystem,
-        private PluginRegistryInterface $registry,
-        private ContainerInterface $container,
-        private PluginEntryValidator $validator
+        private PluginRegistry $registry,
+        private LoggerInterface $logger,
+        private Paths $paths
     ) {}
 
-public function install(string $slug): void {
+public function install(string $package): void {
 
+    $this->assertComposerAvailable();
 
-    if ($this->registry->exists($slug)) {
-        throw new RuntimeException("Plugin [$slug] is already installed.");
-    }
-
-    // Download
-    $archive = $this->downloader->download($slug);
-
-    // Extract
-    $pluginPath = $this->filesystem->extract($archive, $slug);
-
-    $pluginName = ucfirst($slug);
-
-    // Namespace / entry validation
-    $this->validator->validate($pluginName, $pluginPath);
-
-    // Manifest
-    $manifest = $this->filesystem->readManifest($pluginPath);
-
-    // Compatibility
-    $this->assertCompatible($manifest);
-
-    // Load plugin
-    $plugin = $this->filesystem->loadPluginClass($manifest);
-
-    // Plugin install hook
-    if (method_exists($plugin, 'install')) {
-        $plugin->install($this->container);
-    }
-
-    // Migrations
-    if ($manifest->hasMigrations()) {
-        $this->filesystem->runMigrations($pluginPath);
-    }
-
-    // Assets
-    if ($manifest->hasAssets()) {
-        $this->filesystem->publishAssets($pluginPath, $manifest->slug);
-    }
-
-    // Register LAST
-    $this->registry->register(
-        slug: $manifest->slug,
-        version: $manifest->version,
-        enabled: false
-    );
-}
-
-
-
-public function update(string $slug): void
-{
-    if (!$this->registry->exists($slug)) {
-        throw new RuntimeException("Plugin [$slug] is not installed.");
-    }
-
-    $installed = $this->registry->get($slug);
-
-    // step 1:  Fetch latest manifest (remote)
-    $latest = $this->downloader->fetchLatestManifest($slug);
-
-    // step 2: Version check
-    if (version_compare($latest->version, $installed->version, '<=')) {
+    if ($this->registry->existsByPackage($package)) {
         throw new RuntimeException(
-            "Plugin [$slug] is already up to date."
+            "Plugin [$package] is already installed."
         );
     }
 
-    // step 3: Download new version
-    $archive = $this->downloader->download($slug);
+    $this->logger->info('Installing plugin via Composer', [
+        'package' => $package,
+    ]);
 
-    // step 4: Backup current plugin
-    $this->filesystem->backup($slug);
+    $this->runComposer([
+        'require',
+        $package,
+    ]);
+}
 
-    // step 5: Replace files
-    $pluginPath = $this->filesystem->extract($archive, $slug);
+public function update(string $package): void {
 
-    $pluginName = ucfirst($slug);
+        if (!$this->registry->existsByPackage($package)) {
+            throw new RuntimeException(
+                "Plugin [$package] is not installed."
+            );
+        }
 
-    // step 6: Validate new code
-    $this->validator->validate($pluginName, $pluginPath);
+        $this->logger->info('Updating plugin via Composer', [
+            'package' => $package,
+        ]);
 
-    // step 7: Compatibility
-    $this->assertCompatible($latest);
+        $this->runComposer([
+            'update',
+            $package,
+        ]);
+    }
 
-    // step 8: Load plugin
-    $plugin = $this->filesystem->loadPluginClass($latest);
+public function remove(string $package): void {
 
-    // step 9: Plugin update hook
-    if (method_exists($plugin, 'update')) {
-        $plugin->update(
-            $installed->version,
-            $latest->version,
-            $this->container
+        if (!$this->registry->existsByPackage($package)) {
+            throw new RuntimeException(
+                "Plugin [$package] is not installed."
+            );
+        }
+
+        $this->logger->info('Removing plugin via Composer', [
+            'package' => $package,
+        ]);
+
+        $this->runComposer([
+            'remove',
+            $package,
+        ]);
+
+        $this->registry->removeByPackage($package);
+    }
+
+private function runComposer(array $args): void {
+
+
+        if (!file_exists($this->paths->base() . '/composer.json')) {
+            throw new RuntimeException('composer.json not found at '. $this->paths->base());
+        }
+
+
+        $cmd = array_merge(
+            ['composer'],
+            $args,
+            ['--no-interaction']
         );
+
+        $command = implode(' ', array_map('escapeshellarg', $cmd));
+
+        $this->logger->debug('Running composer command', [
+            'command' => $command,
+        ]);
+
+        $process = proc_open(
+            $command,
+            [
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ],
+            $pipes,
+            $this->paths->base()
+        );
+
+        if (!is_resource($process)) {
+            throw new RuntimeException('Unable to start Composer process.');
+        }
+
+        $stdout = stream_get_contents($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+
+        if ($exitCode !== 0) {
+            $this->logger->error('Composer failed', [
+                'stdout' => $stdout,
+                'stderr' => $stderr,
+            ]);
+
+            throw new RuntimeException(
+                "Composer failed:\n" . trim($stderr)
+            );
+        }
+
+        $this->logger->info('Composer finished successfully');
     }
 
-    // step 10: Migrations
-    if ($latest->hasMigrations()) {
-        $this->filesystem->runMigrations($pluginPath);
-    }
-
-    // step 11: Assets
-    if ($latest->hasAssets()) {
-        $this->filesystem->publishAssets($pluginPath, $latest->slug);
-    }
-
-    // step 12: Update registry LAST
-    $this->registry->updateVersion(
-        $slug,
-        $latest->version
+/**
+ * Check of composer is installed and executable  
+ */    
+private function assertComposerAvailable(): void {
+    $process = proc_open(
+        'composer --version',
+        [
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ],
+        $pipes,
+        $this->projectRoot
     );
-}
 
+    if (!is_resource($process)) {
+        throw new RuntimeException('Unable to execute composer.');
+    }
 
-private function assertCompatible(PluginManifest $manifest): void {
-    if (!version_compare(
-        KEYSYSTEM_VERSION,
-        $manifest->keystone,
-        '>='
-    )) {
+    $stdout = stream_get_contents($pipes[1]);
+    $stderr = stream_get_contents($pipes[2]);
+
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+
+    $exitCode = proc_close($process);
+
+    if ($exitCode !== 0) {
         throw new RuntimeException(
-            "Plugin {$manifest->name} is not compatible with this Keystone version."
+            'Composer is not available. Please install Composer to manage plugins.'
         );
     }
 }
 
 
-
 }
+
 
 ?>

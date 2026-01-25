@@ -1,0 +1,14 @@
+    {
+      "name": "Pages",
+      "slug": "pages",
+      "package": "keystone/plugin-pages",
+      "description": "Core pages and routing functionality",
+      "author": "Keystone CMS",
+      "homepage": "https://github.com/keystonecms/plugin-pages",
+      "category": "core",
+      "version": "v1.0.2",
+      "min_keystone": "^1.0",
+      "migrations": true,
+      "assets": true,
+      "recommended": true
+    }

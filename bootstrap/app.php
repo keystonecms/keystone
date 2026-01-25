@@ -22,8 +22,8 @@ use Keystone\Domain\User\CurrentUser;
 use Keystone\Http\Middleware\RequirePolicy;
 use Keystone\Core\Auth\PolicyResolver;
 
-use Keystone\Core\Plugin\PluginDiscovery;
-use Keystone\Core\Plugin\PluginSyncService;
+use Keystone\Core\Plugin\PluginDiscoveryInterface;
+use Keystone\Core\Plugin\PluginSyncServiceInterface;
 use Keystone\Core\Plugin\PluginLoader;
 
 use Keystone\I18n\LocaleContext;
@@ -198,11 +198,11 @@ $errorMiddleware->setDefaultErrorHandler(
 // --------------------------------------------------
 // 9. LOAD PLUGINS (Pages, later Blog, etc.)
 // --------------------------------------------------
-$discovery = $container->get(PluginDiscovery::class);
+$discovery = $container->get(PluginDiscoveryInterface::class);
 $descriptors = $discovery->discover();
 
 $container
-    ->get(PluginSyncService::class)
+    ->get(PluginSyncServiceInterface::class)
     ->sync($descriptors);
 
 $container

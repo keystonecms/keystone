@@ -15,16 +15,17 @@ final class PluginRegistry implements PluginRegistryInterface {
     ) {}
 
 
-public function allIndexedByPackage(): array {
-
+public function allIndexedByPackage(): array
+{
     $indexed = [];
 
     foreach ($this->all() as $plugin) {
-        $indexed[$plugin->getPackage()] = $plugin;
+        $indexed[$plugin['package']] = $plugin;
     }
 
     return $indexed;
 }
+
 
     public function exists(string $slug): bool {
         $stmt = $this->db->prepare(
@@ -34,26 +35,35 @@ public function allIndexedByPackage(): array {
 
         return (bool) $stmt->fetchColumn();
     }
+/**
+ * register the plugin in the database
+ */
+public function register(
+    string $slug,
+    string $package,
+    string $name,
+    string $version,
+    bool $enabled = false
+): void {
+    $stmt = $this->db->prepare(
+        'INSERT INTO plugins 
+         (slug, package, name, version, enabled, installed_at)
+         VALUES (?, ?, ?, ?, ?, NOW())'
+    );
 
-    public function register(
-        string $slug,
-        string $version,
-        bool $enabled = false
-    ): void {
-        $stmt = $this->db->prepare(
-            'INSERT INTO plugins (slug, version, enabled, installed_at)
-             VALUES (?, ?, ?, NOW())'
-        );
+    $stmt->execute([
+        $slug,
+        $package,
+        $name,
+        $version,
+        (int) $enabled,
+    ]);
+}
 
-        $stmt->execute([
-            $slug,
-            $version,
-            (int) $enabled,
-        ]);
-    }
-
-    public function enable(string $slug): void
-    {
+/**
+ * enable the plugin in the database and in the CMS
+ */
+public function enable(string $slug): void {
         $this->db
             ->prepare(
                 'UPDATE plugins SET enabled = 1 WHERE slug = ?'
@@ -90,6 +100,13 @@ public function allIndexedByPackage(): array {
 
         $stmt->execute([$version, $slug]);
     }
+
+    public function count(): int {
+        $stmt = $this->db->prepare('SELECT count(id) AS total FROM plugins');
+               
+        return (int) $stmt->fetchColumn();
+    }
+
 
     public function get(string $slug): array
     {

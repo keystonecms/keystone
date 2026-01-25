@@ -18,7 +18,7 @@ public function sync(array $discovered): void {
 
     foreach ($discovered as $plugin) {
 
-        if ($this->repository->find($plugin->name)) {
+        if ($this->repository->get($plugin->slug)) {
             continue;
         }
 

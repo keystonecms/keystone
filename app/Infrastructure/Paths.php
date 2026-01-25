@@ -8,6 +8,10 @@ final class Paths {
         private readonly string $basePath
     )  {}
 
+    public function base(): string {
+        return $this->basePath;
+    }
+
     public function themes(): string {
         return $this->basePath . '/themes';
     }

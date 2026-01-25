@@ -7,6 +7,8 @@ namespace Keystone\Core\Plugin\Filesystem;
 use RuntimeException;
 use ZipArchive;
 use Keystone\Infrastructure\Paths;
+use Keystone\Core\Plugin\PluginManifest;
+use Keystone\Core\Plugin\PluginInterface;
 
 final class PluginFilesystem {
     
@@ -16,6 +18,42 @@ final class PluginFilesystem {
         $this->pluginDir = $this->paths->plugins();
         $this->varDir    = $this->paths->pluginsbackup();
     }
+    
+    /**
+     * Extract a downloaded ZIP into plugins/{PluginName}
+     */
+public function loadPluginClass(PluginManifest $manifest): PluginInterface {
+    $pluginName = ucfirst($manifest->slug);
+
+    $pluginPath = $this->pluginDir . '/' . $pluginName . '/src/Plugin.php';
+
+    if (!file_exists($pluginPath)) {
+        throw new RuntimeException(
+            "Plugin entry file not found: {$pluginPath}"
+        );
+    }
+
+    require_once $pluginPath;
+
+    $class = "Keystone\\Plugin\\{$pluginName}\\Plugin";
+
+    if (!class_exists($class)) {
+        throw new RuntimeException(
+            "Plugin entry class {$class} not found."
+        );
+    }
+
+    $plugin = new $class();
+
+    if (!$plugin instanceof PluginInterface) {
+        throw new RuntimeException(
+            "Plugin {$class} must implement PluginInterface."
+        );
+    }
+
+    return $plugin;
+}
+
 
     /**
      * Extract a downloaded ZIP into plugins/{PluginName}
@@ -89,21 +127,44 @@ final class PluginFilesystem {
     /**
      * Read plugin.json
      */
-    public function readManifest(string $pluginPath): object
-    {
-        $file = $pluginPath . '/plugin.json';
+public function readManifest(string $pluginPath): PluginManifest {
 
-        if (!file_exists($file)) {
-            throw new RuntimeException("plugin.json not found.");
-        }
+    $file = $pluginPath . '/plugin.json';
 
-        return json_decode(
+    if (!file_exists($file)) {
+        throw new RuntimeException('plugin.json not found.');
+    }
+
+    try {
+        $data = json_decode(
             file_get_contents($file),
-            false,
+            true,
             512,
             JSON_THROW_ON_ERROR
         );
+    } catch (\JsonException $e) {
+        throw new RuntimeException(
+            'Invalid plugin.json: ' . $e->getMessage()
+        );
     }
+
+
+if (empty($data['slug']) || empty($data['version'])) {
+    throw new RuntimeException('Invalid plugin.json: missing required fields.');
+}
+
+
+    return new PluginManifest(
+        slug: $data['slug'],
+        name: $data['name'],
+        package: $data['package'],
+        version: $data['version'],
+        keystone: $data['keystone'] ?? '*',
+        migrations: (bool) ($data['migrations'] ?? false),
+        assets: (bool) ($data['assets'] ?? false),
+    );
+}
+
 
     /**
      * Run plugin migrations
@@ -140,28 +201,33 @@ final class PluginFilesystem {
 
     /* -------------------- helpers -------------------- */
 
-    private function deleteDir(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            return;
-        }
-
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(
-                $dir,
-                \FilesystemIterator::SKIP_DOTS
-            ),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($files as $file) {
-            $file->isDir()
-                ? rmdir($file)
-                : unlink($file);
-        }
-
-        rmdir($dir);
+private function deleteDir(string $dir): void
+{
+    if (!is_dir($dir)) {
+        return;
     }
+
+    $iterator = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator(
+            $dir,
+            \FilesystemIterator::SKIP_DOTS
+        ),
+        \RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($iterator as $file) {
+        $path = $file->getPathname();
+
+        if ($file->isDir()) {
+            rmdir($path);
+        } else {
+            unlink($path);
+        }
+    }
+
+    rmdir($dir);
+}
+
 
     private function copyDir(string $src, string $dst): void
     {

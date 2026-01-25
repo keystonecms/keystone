@@ -38,11 +38,8 @@
   },
   "repositories": [
     {
-      "type": "path",
-      "url": "../keystone-plugins/*",
-      "options": {
-        "symlink": true
-      }
+      "type": "vcs",
+      "url": "https://github.com/keystonecms/plugin-pages"
     }
   ],
   "scripts": {

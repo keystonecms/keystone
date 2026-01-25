@@ -45,10 +45,13 @@
               </a>
             {% else %}
               <span class="badge bg-secondary">Installed</span>
-              <a href="/admin/plugins/{{ installedPlugin.name }}/enable"
-                 class="btn btn-sm btn-primary float-end">
-                Enable
-              </a>
+
+                      <form method="post" action="/admin/plugins/{{ plugin.name }}/enable">
+                        {{ csrf() }}
+                             <button class="btn btn-sm btn-primary float-end">
+                            Enable
+                        </button>
+                    </form>
             {% endif %}
           {% else %}
 

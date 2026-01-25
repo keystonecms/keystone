@@ -2,13 +2,13 @@
 
 namespace Keystone\Core\Plugin;
 
-use Keystone\Core\Plugin\PluginRepository;
+use Keystone\Core\Plugin\PluginRegistryInterface;
 use Keystone\Core\Plugin\PluginUpdateService;
 
 final class PluginStatsService {
     
     public function __construct(
-        private PluginRepository $repository,
+        private PluginRegistryInterface $repository,
         private PluginUpdateService $updates
     ) {}
 

@@ -6,11 +6,13 @@ namespace Keystone\Core\Plugin\Download;
 
 use RuntimeException;
 use Keystone\Infrastructure\Paths;
+use Psr\Log\LoggerInterface;
 
 final class PluginDownloader {
 
 public function __construct(
-    private Paths $paths
+    private Paths $paths,
+    private LoggerInterface $logger
     ) {}
 
 
@@ -21,12 +23,28 @@ public function __construct(
     public function download(string $slug): string {
 
         $url = $this->buildDownloadUrl($slug);
+        
+        if (!is_dir($this->paths->downloads())) {
+            mkdir($this->paths->downloads());
+        }
 
         $target = $this->paths->downloads() . '/' . $slug . '.zip';
-
+        
         $data = @file_get_contents($url);
 
         if ($data === false) {
+
+            $error = error_get_last();
+
+            $this->logger->error(
+                'Plugin download failed',
+                [
+                    'slug' => $slug,
+                    'url'  => $url,
+                    'php_error' => $error['message'] ?? 'unknown',
+                ]
+            );
+
             throw new RuntimeException(
                 "Unable to download plugin [$slug] from GitHub."
             );
@@ -56,7 +74,7 @@ public function __construct(
 
     private function buildDownloadUrl(string $slug): string {
         return sprintf(
-            'https://github.com/keystone-cms/%s/archive/refs/heads/main.zip',
+            'https://github.com/keystonecms/plugin-%s/archive/refs/heads/master.zip',
             $slug
         );
     }
