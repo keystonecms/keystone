@@ -24,3 +24,4 @@ releases/
 .env
 storage/*
 uploads/*
+push-info.txt

@@ -4,17 +4,47 @@ namespace Keystone\Core\Plugin;
 
 use PDO;
 use DateTimeImmutable;
+use Keystone\Core\Plugin\PluginEntity;
+
 
 final class PluginRepository implements PluginRepositoryInterface {
     public function __construct(
         private PDO $pdo
     ) {}
 
-    public function all(): array {
-        return $this->pdo
-            ->query('SELECT * FROM plugins')
-            ->fetchAll(PDO::FETCH_ASSOC);
+
+
+public function allIndexedByPackage(): array
+{
+    $indexed = [];
+
+    foreach ($this->all() as $plugin) {
+        $indexed[$plugin->getPackage()] = $plugin;
     }
+
+    return $indexed;
+}
+
+
+
+public function all(): array
+{
+    $rows = $this->pdo
+        ->query('SELECT * FROM plugins')
+        ->fetchAll(PDO::FETCH_ASSOC);
+
+    return array_map(
+        fn (array $row) => new PluginEntity(
+            name: $row['name'],
+            package: $row['package'],
+            version: $row['version'],
+            enabled: (bool) $row['enabled'],
+            loadOrder: (int) $row['load_order']
+        ),
+        $rows
+    );
+}
+
 
    public function count(): int {
         $stmt = $this->pdo->prepare('SELECT count(id) AS total FROM plugins');
@@ -36,16 +66,17 @@ final class PluginRepository implements PluginRepositoryInterface {
         $now = new DateTimeImmutable();
 
         $stmt = $this->pdo->prepare(
-            'INSERT INTO plugins (name, version, enabled, load_order, installed_at, updated_at)
-             VALUES (:name, :version, 0, 100, :now, :now)'
+            'INSERT INTO plugins (name, package, version, enabled, load_order, installed_at, updated_at)
+             VALUES (:name, :package, :version, 0, :load_order, :now, :now)'
         );
 
         $stmt->execute([
             'name'    => $plugin->name,
+            'package'  => $plugin->package,
             'version' => $plugin->version,
             'now'     => $now->format('Y-m-d H:i:s'),
             'enabled' => 0,
-            'load_order' => $loadOrder,
+            'load_order' => $plugin->loadOrder,
         ]);
     }
 

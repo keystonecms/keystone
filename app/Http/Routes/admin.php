@@ -1,6 +1,9 @@
 <?php
 
 use Keystone\Http\Controllers\Admin\PluginController;
+use Keystone\Http\Controllers\Admin\PluginCatalogController;
+use Keystone\Http\Controllers\Admin\PluginInstallController;
+
 use Keystone\Http\Middleware\AuthMiddleware;
 use Keystone\Http\Middleware\CsrfMiddleware;
 use Keystone\Http\Controllers\Admin\MenuController;
@@ -14,12 +17,6 @@ $requirePolicy = $container->get(RequirePolicy::class);
 $app->group('/admin', function ($group) use ($requirePolicy) {
  
     $group->get('/dashboard', [DashboardController::class, 'index'])->setName('admin.dashboard');
-
-    $group->get('/plugins', [PluginController::class, 'index'])->setName('plugin.index');
-
-    $group->post('/plugins/{name}/enable',[PluginController::class, 'enable']);
-
-    $group->post('/admin/plugins/{name}/disable',[PluginController::class, 'disable']);
 
     $group->get('/menus', [MenuController::class, 'index']);
     $group->get('/menus/create', [MenuController::class, 'create']);
@@ -46,6 +43,22 @@ $app->group('/admin', function ($group) use ($requirePolicy) {
     })
 ->add($container->get(CsrfMiddleware::class))
 ->add($container->get(AuthMiddleware::class));
+
+$app->group('/admin/plugins', function ($group) use ($requirePolicy) {
+
+    $group->get('', PluginController::class . ':index');
+
+    $group->get('/catalog', PluginCatalogController::class . ':index');
+
+    $group->post('/install', PluginInstallController::class . ':install');
+
+    $group->post('/{name}/enable', PluginController::class . ':enable');
+    $group->post('/{name}/disable', PluginController::class . ':disable');
+
+})
+->add($container->get(CsrfMiddleware::class))
+->add($container->get(AuthMiddleware::class));
+
 
 
 ?>

@@ -31,18 +31,21 @@
         {% block navigation %}
 
              <nav class="sidebar mt-5">
-<ul class="nav nav-pills flex-column gap-1">
-
+                
+                 <h6 class="my-2 py-2 border-bottom border-1">Core:</h6> 
+                 <ul class="nav nav-pills flex-column gap-1">
                  <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/dashboard">{{ 'menu.dashboard'| trans| capitalize }}</a></li>
-                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/users">{{ 'menu.users'| trans| capitalize }}</a></li>
                  <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/roles">{{ 'menu.roles'| trans| capitalize }}</a></li>
                  <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/menus">{{ 'menu.menu'| trans| capitalize }}</a></li>
                  <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/plugins">{{ 'menu.plugins'| trans| capitalize }}</a></li>
                  <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/themes">{{ 'menu.themes'| trans| capitalize }}</a></li>
+                 <li class="nav-item"><a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}" href="{{ url }}/admin/system/errors">{{ 'menu.error_log'| trans| capitalize }}</a></li>
+                </ul>
 
+               <h6 class="my-2 py-2 border-bottom border-1">Plugins:</h6> 
 
-                {% for item in admin_menu %}
-
+               {% for item in admin_menu %}
+                    <ul class="nav nav-pills flex-column gap-1">
                      <li class="nav-item">
 
                         <a class="nav-link {{ item.active ? 'active fw-semibold bg-primary bg-opacity-75' : '' }}"

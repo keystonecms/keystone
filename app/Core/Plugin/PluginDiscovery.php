@@ -77,9 +77,9 @@ final class PluginDiscovery {
                     "Install path not found for {$package['name']}"
                 );
             }
-
             $plugins[] = new PluginDescriptor(
                 name: $plugin->getName(),
+                package: $package['name'],
                 version: $package['version'] ?? 'dev',
                 description: $plugin->getDescription(),
                 class: $pluginClass,

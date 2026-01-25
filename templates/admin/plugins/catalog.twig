@@ -1,0 +1,64 @@
+{% extends "@core/admin/pages/layout.twig" %}
+
+{% block content %}
+<h1>Plugin Catalog</h1>
+
+<p class="text-muted">
+  Browse and install available Keystone plugins.
+</p>
+
+<div class="row">
+  {% for plugin in catalog %}
+    {% set installedPlugin = installed[plugin.package] ?? null %}
+
+    <div class="col-md-4">
+      <div class="card mb-3 h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ plugin.name }}</h5>
+
+          <p class="card-text">
+            {{ plugin.description }}
+          </p>
+
+          <p class="text-muted mb-2">
+            <small>
+              {{ plugin.author ?? 'Community' }}
+              · {{ plugin.category ?? 'general' }}
+            </small>
+          </p>
+        </div>
+
+        <div class="card-footer bg-light">
+          {% if installedPlugin %}
+            {% if installedPlugin.enabled %}
+              <span class="badge bg-success">Enabled</span>
+              <a href="/admin/plugins/{{ installedPlugin.name }}/disable"
+                 class="btn btn-sm btn-outline-secondary float-end">
+                Disable
+              </a>
+            {% else %}
+              <span class="badge bg-secondary">Installed</span>
+              <a href="/admin/plugins/{{ installedPlugin.name }}/enable"
+                 class="btn btn-sm btn-primary float-end">
+                Enable
+              </a>
+            {% endif %}
+          {% else %}
+            <form method="post"
+                  action="/admin/plugins/install"
+                  class="d-inline">
+              {{ csrf() }}
+              <input type="hidden" name="package" value="{{ plugin.package }}">
+              <button class="btn btn-sm btn-success">
+                Install
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+

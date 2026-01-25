@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Psr7\Response;
 use Keystone\Http\Controllers\BaseController;
 use Keystone\Core\Auth\AuthorityActivityService;
-use Keystone\Plugins\Auth\Domain\Auth\TwoFactorService;
+use Keystone\Core\Auth\TwoFactor\TwoFactorHandlerInterface;
 use Keystone\Core\Security\SecurityEventService;
 use Keystone\Core\Auth\AuthService;
 use Keystone\Auth\Event\UserLoggedIn;
@@ -27,15 +27,15 @@ final class LoginController extends BaseController {
         private AuthService $auth,
         private ResponseFactoryInterface $responseFactory,
         private LoggerInterface  $logger,
-        private TwoFactorService $twoFactor,
+        private TwoFactorHandlerInterface $twoFactor,
         private AuthorityActivityService $authority,
         private SecurityEventService $security,
         private LoginAuditService $loginAudit
     ) {}
 
-    public function show(ServerRequestInterface $request): ResponseInterface
-    {
- $queryParams = $request->getQueryParams();
+    public function show(ServerRequestInterface $request): ResponseInterface {
+    
+    $queryParams = $request->getQueryParams();
 
         return $this->view->render(
             $this->responseFactory->createResponse(),
@@ -67,26 +67,25 @@ $data = (array) $request->getParsedBody();
 
 
     if ($user) {
-        error_log('LOGIN OK: calling LoginAuditService');
         $this->loginAudit->log(
             $user->id(),
             $ip
         );
     }
 
-        if ($user->hasTwoFactor()) {
-                $this->auth->startTwoFactor($user);
+    
+if ($this->twoFactor->requiresTwoFactor($user)) {
 
-                $challengeToken = $this->twoFactor->startChallenge($user);
+    $challengeToken = $this->twoFactor->start($user);
 
-            $_SESSION['2fa_user_id'] = $user->id();
+    $_SESSION['2fa_user_id'] = $user->id();
 
-            return $this->json($response, [
-                'status'   => 'success',
-                'message'  => 'Tweestapsverificatie vereist',
-                'redirect' => '/2fa?token=' . $challengeToken,
-            ]);
-        }
+    return $this->json($response, [
+        'status'   => 'success',
+        'message'  => 'Tweestapsverificatie vereist',
+        'redirect' => '/2fa?token=' . $challengeToken,
+    ]);
+}
 
         // succesvol
         if (!$this->security->isNewIp($user->id(), $ip)) {

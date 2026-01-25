@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a46b599cf15703d6218e60f5ba6726e",
+    "content-hash": "821004ffaf07e8b42c0acef52e220da3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -685,6 +685,30 @@
                 }
             ],
             "time": "2025-08-23T21:21:41+00:00"
+        },
+        {
+            "name": "keystone/plugin-auth",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../keystone-plugins/auth",
+                "reference": "a27c7eff6839e4809e46c9e30ad54c174be6af1c"
+            },
+            "type": "keystone-plugin",
+            "extra": {
+                "keystone": {
+                    "plugin-class": "Keystone\\Plugin\\Auth\\Plugin"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Keystone\\Plugin\\Auth\\": "src/"
+                }
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "keystone/plugin-pages",
@@ -5168,7 +5192,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "keystone/plugin-auth": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

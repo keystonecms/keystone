@@ -27,6 +27,7 @@ return [
         'menu' => 'menu',
         'plugins' => 'plugins',
         'themes' => 'themes',
+        'error_log' => 'error log',
 
     ]
 

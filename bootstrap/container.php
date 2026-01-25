@@ -67,6 +67,12 @@ use Keystone\Infrastructure\Persistence\PolicyRepository;
 use Keystone\Http\Session\SessionInterface;
 use Keystone\Infrastructure\Session\PhpSession;
 
+use Keystone\Core\Mail\MailerInterface;
+use Keystone\Core\Mail\NullMailer;
+
+use Keystone\Core\Auth\TwoFactor\TwoFactorHandlerInterface;
+use Keystone\Core\Auth\TwoFactor\NullTwoFactorHandler;
+
 use Keystone\Security\LoginAudit\LoginAuditRepositoryInterface;
 use Keystone\Security\LoginAudit\LoginAuditRepository;
 use Keystone\i18n\Translator;
@@ -189,6 +195,8 @@ return [
 /**
  * autowire statements
  */
+   MailerInterface::class => DI\autowire(NullMailer::class),
+   TwoFactorHandlerInterface::class => DI\autowire(NullTwoFactorHandler::class),
    PluginRepositoryInterface::class => DI\autowire(PluginRepository::class),
    LoginAuditRepositoryInterface::class => DI\autowire(LoginAuditRepository::class),
    IpInfoCacheInterface::class => DI\autowire(NullIpInfoCache::class),

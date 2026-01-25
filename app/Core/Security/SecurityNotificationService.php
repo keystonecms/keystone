@@ -2,7 +2,7 @@
 
 namespace Keystone\Core\Security;
 
-use Keystone\Plugins\Auth\Infrastructure\Mail\MailerInterface;
+use Keystone\Core\Mail\MailerInterface;
 use Keystone\Domain\User\UserRepositoryInterface;
 use Keystone\Core\User\UserSecuritySettingsService;
 
@@ -34,8 +34,13 @@ final class SecurityNotificationService {
     }
 
         match ($type) {
-            'login_new_ip' => $this->mailer->sendLoginNewIp($user, $ip),
-            'login_failed_threshold' => $this->mailer->sendMessage(
+            'login_new_ip' => $this->mailer->send(
+                $user->email(),
+                'Login from new ip-address',
+                '@auth/mail/new_logis.twig',
+                ['ip' => $ip]
+            ),
+            'login_failed_threshold' => $this->mailer->send(
                 $user->email(),
                 'Meerdere mislukte loginpogingen',
                 '@auth/mail/failed_logins.twig',

@@ -24,7 +24,7 @@ final class AccountSecurityController extends BaseController {
         
         $user = $this->currentUser->user();
 
-        return $this->view->render($response, '@pages/admin/security.twig', [
+        return $this->view->render($response, '@core/account/security.twig', [
             'settings' => $this->settings->get($user->id()),
         ]);
     }

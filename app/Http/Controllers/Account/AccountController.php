@@ -30,7 +30,7 @@ final class AccountController extends BaseController
 
         return $this->twig->render(
             new Response(),
-            '@auth/account/index.twig',
+            '@core/account/index.twig',
             [
                 'user' => $user,
             ]

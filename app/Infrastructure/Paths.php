@@ -25,7 +25,7 @@ final class Paths {
     }
 
     public function cache(): string {
-        return $this->basePath . '/var/cache';
+        return $this->basePath . '/cache';
     }
 }
 
