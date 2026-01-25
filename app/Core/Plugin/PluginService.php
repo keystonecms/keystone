@@ -2,11 +2,16 @@
 
 namespace Keystone\Core\Plugin;
 
+use Keystone\Core\Plugin\PluginDiscoveryInterface;
+use Keystone\Core\Plugin\PluginRepositoryInterface;
+use Keystone\Core\Plugin\PluginSyncServiceInterface;
+
 final class PluginService {
+    
     public function __construct(
-        private PluginDiscovery $discovery,
+        private PluginDiscoveryInterface $discovery,
         private PluginRepositoryInterface $repository,
-        private PluginSyncService $sync
+        private PluginSyncServiceInterface  $sync
     ) {}
 
 public function listPlugins(): array

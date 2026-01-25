@@ -21,9 +21,18 @@ public function __construct(
 
     $cacheFile = $this->paths->cache() . '/plugin-catalog.json';
 
-    if (file_exists($cacheFile) && filemtime($cacheFile) > time() - 7200) {
-        return json_decode(file_get_contents($cacheFile), true)['plugins'];
+if (file_exists($cacheFile) && filemtime($cacheFile) > time() - 7200) {
+    $data = json_decode(file_get_contents($cacheFile), true);
+
+    if (!is_array($data) || !isset($data['plugins'])) {
+        throw new RuntimeException(
+            'Invalid plugin catalog format'
+        );
     }
+
+    return $data['plugins'];
+}
+
 
        
         $json = @file_get_contents(self::CATALOG_URL);

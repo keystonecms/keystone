@@ -2,7 +2,10 @@
 
 namespace Keystone\Core\Plugin;
 
-final class PluginSyncService {
+use Keystone\Core\Plugin\PluginSyncServiceInterface;
+use Keystone\Core\Plugin\PluginRepositoryInterface;
+
+final class PluginSyncService implements PluginSyncServiceInterface {
     
     public function __construct(
         private PluginRepositoryInterface $repository
@@ -12,7 +15,7 @@ final class PluginSyncService {
      * @param PluginDescriptor[] $discovered
      */
 public function sync(array $discovered): void {
-    
+
     foreach ($discovered as $plugin) {
 
         if ($this->repository->find($plugin->name)) {

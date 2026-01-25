@@ -5,8 +5,10 @@ namespace Keystone\Core\Plugin;
 
 use Composer\Autoload\ClassLoader;
 use RuntimeException;
+use Keystone\Core\Plugin\PluginDiscoveryInterface;
 
-final class PluginDiscovery {
+final class PluginDiscovery implements PluginDiscoveryInterface {
+
     public function __construct(
         private ClassLoader $classLoader
     ) {}
