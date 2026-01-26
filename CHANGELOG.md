@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/keystonecms/keystone/compare/v1.2.3...v1.2.4) (2026-01-26)
+
+
+### Bug Fixes
+
+* added some disclaimers in the code ([9be609e](https://github.com/keystonecms/keystone/commit/9be609e07c0058dad0601b783040360049e4bd29))
+
 ## [1.2.3](https://github.com/keystonecms/keystone/compare/v1.2.2...v1.2.3) (2026-01-26)
 
 
