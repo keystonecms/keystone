@@ -52,9 +52,16 @@ jobs:
           base64 keystone-${VERSION}.zip.sig \
             > keystone-${VERSION}.zip.sig
 
-          jq -n \
-            --arg v "$VERSION" \
-            '{version:$v}' > latest.json
+          cat > latest.json <<EOF
+            {
+              "version": "$VERSION",
+              "zip": "keystone-$VERSION.zip",
+              "signature": "keystone-$VERSION.zip.sig"
+            }
+            EOF
+
+          ls -l latest.json
+          cat latest.json
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
