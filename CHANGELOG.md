@@ -1,3 +1,10 @@
+## [1.2.11](https://github.com/keystonecms/keystone/compare/v1.2.10...v1.2.11) (2026-01-26)
+
+
+### Bug Fixes
+
+* changed to urls in signing.yml and working on core update via Dashboard GUI ([4e58bb0](https://github.com/keystonecms/keystone/commit/4e58bb08d918802bd11edd461a2b221015be0bf0))
+
 ## [1.2.10](https://github.com/keystonecms/keystone/compare/v1.2.9...v1.2.10) (2026-01-26)
 
 
