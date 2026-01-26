@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Keystone CMS
  *
@@ -22,49 +24,62 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Keystone\Infrastructure;
+namespace Keystone\Core\Update;
 
-final class Paths {
+use RuntimeException;
+use Keystone\Infrastructure\Urls;
+use Keystone\Infrastructure\Paths;
+
+
+final class UpdateSource {
 
     public function __construct(
-        private readonly string $basePath
-    )  {}
+        private readonly Urls $urls,
+        private readonly Paths $paths
+    ) {}
 
-    public function base(): string {
-        return $this->basePath;
+    public function downloadLatest(): string {
+
+        $meta = json_decode(
+            file_get_contents($this->urls->updateLatest()),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        $zipUrl = $meta['zip'] ?? null;
+        $sigUrl = $meta['signature'] ?? null;
+
+        if (!$zipUrl || !$sigUrl) {
+            throw new RuntimeException('Invalid update metadata');
+        }
+
+        if (!is_dir($this->paths->temp())) {
+            mkdir($this->paths->temp());
+            }
+
+        $tmpDir = $this->paths->temp() . '/keystone_update';
+        mkdir($tmpDir);
+
+        $zipPath = $tmpDir . '/' . basename($zipUrl);
+        $sigPath = $zipPath . '.sig';
+
+dd($zipUrl);
+
+        file_put_contents($zipPath, file_get_contents($zipUrl));
+        file_put_contents($sigPath, file_get_contents($sigUrl));
+
+        return $zipPath;
     }
 
-    public function themes(): string {
-        return $this->basePath . '/themes';
-    }
+public function latestVersion(): string {
 
-    public function downloads(): string {
-        return $this->basePath . '/downloads';
-    }
-   public function uploads(): string {
-        return $this->basePath . '/../public_html/uploads';
-    }
+        $json = file_get_contents(
+             $this->urls->updateLatest()
+        );
 
-    public function plugins(): string {
-        return $this->basePath . '/plugins';
+        return json_decode($json, true)['version'];
     }
-    
-    public function pluginsbackup(): string {
-        return $this->basePath . '/var/plugins';
-    }
-
-    public function resources(): string {
-        return $this->basePath . '/resources/lang';
-    }
-
-    public function cache(): string {
-        return $this->basePath . '/cache';
-    }
-    public function temp(): string {
-        return $this->basePath . '/tmp';
-    }
-
 }
-
 
 ?>

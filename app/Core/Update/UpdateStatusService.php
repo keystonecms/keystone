@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Keystone\Infrastructure\Update;
+namespace Keystone\Core\Update;
 
 use Psr\SimpleCache\CacheInterface;
-use Keystone\Infrastructure\Update\VersionReader;
-use Keystone\Infrastructure\Update\UpdateSource;
+use Keystone\Core\Update\VersionReader;
+use Keystone\Core\Update\UpdateSource;
 
 final class UpdateStatusService {
 
@@ -21,8 +21,6 @@ final class UpdateStatusService {
     $current = $this->versionReader->current();
 
     $latest  = $this->updateSource->latestVersion();
-
-dd($latest);
 
     return new UpdateStatus(
             current: $current,

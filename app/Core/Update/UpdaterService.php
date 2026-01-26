@@ -2,16 +2,41 @@
 
 declare(strict_types=1);
 
-namespace Keystone\Infrastructure\Update;
+/*
+ * Keystone CMS
+ *
+ * @author Constan van Suchtelen van de Haere <constan.vansuchtelenvandehaere@hostingbe.com>
+ * @copyright 2026 HostingBE
+ * @package   Keystone CMS
+ * @author    HostingBE
+ * @license   MIT
+ * @link      https://keystone-cms.com
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+ * files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
+ * is furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+ * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+namespace Keystone\Core\Update;
 
 use RuntimeException;
 use ZipArchive;
+use Keystone\Core\Update\Signature\SignatureVerifier;
+use Keystone\Infrastructure\Paths;
 
 final class UpdaterService {
 
     public function __construct(
-        private readonly SignatureVerifier $signatureVerifier
-    ) {}
+        private readonly SignatureVerifier $signatureVerifier,
+        private readonly Paths $paths
+        ) {}
 
 
 
@@ -67,10 +92,14 @@ public function activate(
             'PHP version check'
         );
 
-        // 2. Extract ZIP to temp dir
-        $tmpDir = sys_get_temp_dir() . '/keystone_update_' . uniqid();
-        mkdir($tmpDir);
+        // 2. Extract ZIP to temp dir in website path
+        if (!is_dir($this->paths->temp())) {
+            mkdir($this->paths->temp());
+            }
 
+        $tmpDir = $this->paths->temp() . '/keystone_update_' . uniqid();
+        mkdir($tmpDir);
+        
         $zip = new ZipArchive();
         if ($zip->open($zipPath) !== true) {
             throw new RuntimeException('Unable to open ZIP');

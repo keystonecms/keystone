@@ -20,51 +20,18 @@
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
  * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
 
 namespace Keystone\Infrastructure;
 
-final class Paths {
+final class Urls {
 
-    public function __construct(
-        private readonly string $basePath
-    )  {}
+public function __construct()  {}
 
-    public function base(): string {
-        return $this->basePath;
-    }
-
-    public function themes(): string {
-        return $this->basePath . '/themes';
-    }
-
-    public function downloads(): string {
-        return $this->basePath . '/downloads';
-    }
-   public function uploads(): string {
-        return $this->basePath . '/../public_html/uploads';
-    }
-
-    public function plugins(): string {
-        return $this->basePath . '/plugins';
-    }
-    
-    public function pluginsbackup(): string {
-        return $this->basePath . '/var/plugins';
-    }
-
-    public function resources(): string {
-        return $this->basePath . '/resources/lang';
-    }
-
-    public function cache(): string {
-        return $this->basePath . '/cache';
-    }
-    public function temp(): string {
-        return $this->basePath . '/tmp';
+public function updateLatest() {
+    return 'https://github.com/keystonecms/keystone/releases/latest/download/latest.json';
     }
 
 }
-
-
 ?>

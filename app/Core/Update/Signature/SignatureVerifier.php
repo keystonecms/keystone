@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Keystone\Infrastructure\Update\Signature;
+namespace Keystone\Core\Update\Signature;
 
 use RuntimeException;
 
@@ -28,6 +28,7 @@ final class SignatureVerifier {
             file_get_contents($signaturePath),
             true
         );
+dd($signaturePath);
 
         $ok = openssl_verify(
             $data,

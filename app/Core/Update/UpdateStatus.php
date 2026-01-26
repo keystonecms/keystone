@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Keystone\Infrastructure\Update;
+namespace Keystone\Core\Update;
 
 final readonly class UpdateStatus {
     

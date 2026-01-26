@@ -1,6 +1,6 @@
 <?php
 
-namespace Keystone\Infrastructure\Update;
+namespace Keystone\Core\Update;
 
 use Keystone\Infrastructure\Paths;
 

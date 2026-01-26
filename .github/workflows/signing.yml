@@ -61,8 +61,8 @@ jobs:
           cat > latest.json <<EOF
           {
             "version": "$VERSION",
-            "zip": "keystone-$VERSION.zip",
-            "signature": "keystone-$VERSION.zip.sig"
+            "zip": "https://github.com/keystonecms/keystone/releases/download/${VERSION}/keystone-${VERSION}.zip",
+            "signature": "https://github.com/keystonecms/keystone/releases/download/${VERSION}/keystone-$VERSION.zip.sig"
           }
           EOF
 

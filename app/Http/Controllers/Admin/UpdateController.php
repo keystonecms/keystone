@@ -26,61 +26,56 @@ declare(strict_types=1);
 
 namespace Keystone\Http\Controllers\Admin;
 
-use Keystone\Core\System\ErrorRepositoryInterface;
-use Keystone\Domain\User\CurrentUser;
+use Keystone\Core\Update\UpdateStatusService;
+use Keystone\Http\Controllers\BaseController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Keystone\Core\Update\UpdaterService;
+use Keystone\Core\Update\UpdateSource;
+use Laminas\Diactoros\Response\JsonResponse;
 use Slim\Views\Twig;
 
-final class ErrorController {
+final class UpdateController extends BaseController {
+    
     public function __construct(
-        private Twig $view,
-        private ErrorRepositoryInterface $errors,
-        private CurrentUser $currentUser
-    ) {}
+        private readonly UpdateStatusService $updates,
+        private readonly UpdateSource $source,
+        private readonly UpdaterService $updater,
+        private readonly Twig $view
+         ) {}
 
-    /**
-     * GET /admin/system/errors
-     */
     public function index(
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-        return $this->view->render($response, 'admin/system/errors/index.twig', [
-            'errors' => $this->errors->findUnresolved(),
-            'stats'  => $this->errors->stats(),
+        return $this->view->render($response, '@core/admin/system/update.twig', [
+            'status' => $this->updates->getStatus(),
         ]);
     }
 
-    /**
-     * GET /admin/system/errors/{id}
-     */
-    public function show(
+public function dryRun(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        array $args
+        ResponseInterface $response
     ): ResponseInterface {
-        return $this->view->render($response, 'admin/system/errors/show.twig', [
-            'error' => $this->errors->find((int) $args['id']),
+
+    try {
+            // 1. Download latest release (zip + sig)
+            $zipPath = $this->source->downloadLatest();
+
+            // 2. Run dry-run
+            $result = $this->updater->dryRun($zipPath);
+
+    return $this->json($response, [
+        'status'  => 'success',
+        'message' => $result->isOk() . " " . $result->toArray()
         ]);
-    }
 
-    /**
-     * POST /admin/system/errors/{id}/resolve
-     */
-    public function resolve(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        array $args
-    ): ResponseInterface {
-        $this->errors->markResolved(
-            (int) $args['id'],
-            $this->currentUser->id()
-        );
-
-        return $response
-            ->withHeader('Location', '/admin/system/errors')
-            ->withStatus(302);
+        } catch (\Throwable $e) {
+            return $this->json($response, [
+                'ok'    => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
 

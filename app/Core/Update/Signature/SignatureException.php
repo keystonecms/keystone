@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Keystone\Infrastructure\Update\Signature;
+namespace Keystone\Core\Update\Signature;
 
 use RuntimeException;
 

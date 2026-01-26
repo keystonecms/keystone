@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Keystone CMS
  *
@@ -22,49 +24,44 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Keystone\Infrastructure;
+namespace Keystone\Core\Update;
 
-final class Paths {
-
-    public function __construct(
-        private readonly string $basePath
-    )  {}
-
-    public function base(): string {
-        return $this->basePath;
-    }
-
-    public function themes(): string {
-        return $this->basePath . '/themes';
-    }
-
-    public function downloads(): string {
-        return $this->basePath . '/downloads';
-    }
-   public function uploads(): string {
-        return $this->basePath . '/../public_html/uploads';
-    }
-
-    public function plugins(): string {
-        return $this->basePath . '/plugins';
-    }
+final class PreflightResult {
     
-    public function pluginsbackup(): string {
-        return $this->basePath . '/var/plugins';
+    private array $checks = [];
+
+
+    public function add(string $check, bool $ok, string $message): void {
+        $this->checks[] = [
+            'check' => $check,
+            'ok' => $ok,
+            'message' => $message,
+        ];
     }
 
-    public function resources(): string {
-        return $this->basePath . '/resources/lang';
-    }
-
-    public function cache(): string {
-        return $this->basePath . '/cache';
-    }
-    public function temp(): string {
-        return $this->basePath . '/tmp';
-    }
-
+public function toArray(): array {
+    return array_map(
+        fn ($check) => [
+            'key'     => $check->key,
+            'ok'      => $check->ok,
+            'message' => $check->message,
+        ],
+        $this->checks
+    );
 }
 
+public function isOk(): bool {
+        foreach ($this->checks as $check) {
+            if ($check['ok'] === false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+public function all(): array {
+        return $this->checks;
+    }
+}
 
 ?>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Keystone CMS
  *
@@ -21,50 +23,31 @@
  * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+namespace Keystone\Core\Update;
 
-namespace Keystone\Infrastructure;
-
-final class Paths {
-
+final class ReleaseManifest {
     public function __construct(
-        private readonly string $basePath
-    )  {}
+        public readonly string $name,
+        public readonly string $version,
+        public readonly string $releasedAt,
+        public readonly string $minPhp,
+        public readonly array $requiredFiles,
+        public readonly array $requiredDirectories,
+        public readonly array $sharedSymlinks
+    ) {}
 
-    public function base(): string {
-        return $this->basePath;
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            name: $data['name'],
+            version: $data['version'],
+            releasedAt: $data['released_at'],
+            minPhp: $data['php']['min'],
+            requiredFiles: $data['checks']['files'] ?? [],
+            requiredDirectories: $data['checks']['directories'] ?? [],
+            sharedSymlinks: $data['shared']['symlinks'] ?? []
+        );
     }
-
-    public function themes(): string {
-        return $this->basePath . '/themes';
-    }
-
-    public function downloads(): string {
-        return $this->basePath . '/downloads';
-    }
-   public function uploads(): string {
-        return $this->basePath . '/../public_html/uploads';
-    }
-
-    public function plugins(): string {
-        return $this->basePath . '/plugins';
-    }
-    
-    public function pluginsbackup(): string {
-        return $this->basePath . '/var/plugins';
-    }
-
-    public function resources(): string {
-        return $this->basePath . '/resources/lang';
-    }
-
-    public function cache(): string {
-        return $this->basePath . '/cache';
-    }
-    public function temp(): string {
-        return $this->basePath . '/tmp';
-    }
-
 }
-
 
 ?>

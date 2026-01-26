@@ -52,6 +52,7 @@ use Keystone\Infrastructure\Persistence\MenuWriteRepository;
 use Keystone\Core\Settings\SettingsInterface;
 use Keystone\Core\Settings\DatabaseSettings;
 use Keystone\Infrastructure\Paths;
+use Keystone\Infrastructure\Urls;
 use Keystone\Core\System\ErrorRepositoryInterface;
 use Keystone\Infrastructure\System\ErrorRepository;
 use Keystone\Admin\Menu\AdminMenuRegistry;
@@ -196,6 +197,7 @@ return [
         return $logger;
     },
     Paths::class => DI\autowire()->constructorParameter('basePath', BASE_PATH),
+    Urls::class => DI\autowire(),
     // PluginLoader::class => function ($c) {
     //     return new PluginLoader(
     //         $c,

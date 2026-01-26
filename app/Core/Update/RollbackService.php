@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Keystone CMS
  *
@@ -22,48 +24,34 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Keystone\Infrastructure;
+namespace Keystone\Core\Update;
 
-final class Paths {
+use RuntimeException;
 
-    public function __construct(
-        private readonly string $basePath
-    )  {}
+final class RollbackService {
 
-    public function base(): string {
-        return $this->basePath;
-    }
+public function rollback(string $projectRoot): void {
 
-    public function themes(): string {
-        return $this->basePath . '/themes';
-    }
 
-    public function downloads(): string {
-        return $this->basePath . '/downloads';
-    }
-   public function uploads(): string {
-        return $this->basePath . '/../public_html/uploads';
-    }
+        $releasesDir = $projectRoot . '/releases';
+        $currentLink = $projectRoot . '/current';
 
-    public function plugins(): string {
-        return $this->basePath . '/plugins';
-    }
-    
-    public function pluginsbackup(): string {
-        return $this->basePath . '/var/plugins';
-    }
+        $releases = array_values(array_filter(
+            scandir($releasesDir),
+            fn ($d) => $d[0] !== '.'
+        ));
 
-    public function resources(): string {
-        return $this->basePath . '/resources/lang';
-    }
+        if (count($releases) < 2) {
+            throw new RuntimeException('No previous release to roll back to');
+        }
 
-    public function cache(): string {
-        return $this->basePath . '/cache';
-    }
-    public function temp(): string {
-        return $this->basePath . '/tmp';
-    }
+        sort($releases);
+        $previous = $releases[count($releases) - 2];
 
+        $tmpLink = $projectRoot . '/.current_tmp';
+        symlink("releases/$previous", $tmpLink);
+        rename($tmpLink, $currentLink);
+    }
 }
 
 

@@ -1,0 +1,39 @@
+{% extends '@core/admin/pages/layout.twig' %}
+
+{% block content %}
+<h1>System update</h1>
+
+
+<div class="alert alert-success d-none"></div>
+<div class="alert alert-danger d-none"></div>
+
+{% if status.hasUpdate %}
+    <p>
+        Current version: {{ status.current }}<br>
+        Latest version: {{ status.latest }}
+    </p>
+
+<form action="{{url}}/admin/system/update/dry-run"
+      method="POST"
+      id="form-system-update"
+      name="form-system-update"
+      reload="false"
+      >
+        
+      {{ csrf() }}
+
+    <button class="btn btn-primary" data-action="dry-run">
+        Run dry-run
+    </button>
+
+</form>
+
+{% else %}
+    <p>Your system is up to date.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{url}}/assets/js/multiform-ajax.js"></script>
+{% endblock %}
