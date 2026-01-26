@@ -1,3 +1,10 @@
+## [1.2.7](https://github.com/keystonecms/keystone/compare/v1.2.6...v1.2.7) (2026-01-26)
+
+
+### Bug Fixes
+
+* added creating assets zip to pipeline ([0c7374c](https://github.com/keystonecms/keystone/commit/0c7374cc7f96097d3f9c7d4a51f391af0557cdbc))
+
 ## [1.2.6](https://github.com/keystonecms/keystone/compare/v1.2.5...v1.2.6) (2026-01-26)
 
 
