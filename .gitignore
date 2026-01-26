@@ -22,6 +22,7 @@ shared/
 storage/
 releases/
 .env
+var/
 storage/*
 uploads/*
 push-info.txt

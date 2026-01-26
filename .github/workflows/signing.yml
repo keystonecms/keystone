@@ -1,38 +1,53 @@
-name: Release
+name: Signing
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_run:
+    workflows: ["Version"]
+    types:
+      - completed
 
 jobs:
   release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "Signing tag: $TAG"
 
       - name: Build release zip
         run: |
-          zip -r keystone-${GITHUB_REF_NAME#v}.zip . \
+          VERSION=${TAG#v}
+          zip -r keystone-${VERSION}.zip . \
             -x "*.git*" "node_modules/*" "vendor/*"
 
       - name: Sign release
+        env:
+          KEYSTONE_SIGNING_KEY: ${{ secrets.KEYSTONE_SIGNING_KEY }}
         run: |
+          VERSION=${TAG#v}
+
           echo "$KEYSTONE_SIGNING_KEY" > private.pem
 
           openssl dgst -sha256 \
             -sign private.pem \
-            -out keystone-${GITHUB_REF_NAME#v}.zip.sig \
-            keystone-${GITHUB_REF_NAME#v}.zip
+            -out keystone-${VERSION}.zip.sig \
+            keystone-${VERSION}.zip
 
-          base64 keystone-${GITHUB_REF_NAME#v}.zip.sig \
-            > keystone-${GITHUB_REF_NAME#v}.zip.sig
+          base64 keystone-${VERSION}.zip.sig \
+            > keystone-${VERSION}.zip.sig
 
           jq -n \
-            --arg v "${GITHUB_REF_NAME#v}" \
+            --arg v "$VERSION" \
             '{version:$v}' > latest.json
 
       - name: Publish artifacts
         run: |
-          # upload zip + sig + latest.json
+          echo "TODO: upload keystone-${VERSION}.zip, .sig en latest.json"
