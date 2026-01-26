@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/keystonecms/keystone/compare/v1.2.4...v1.2.5) (2026-01-26)
+
+
+### Bug Fixes
+
+* changed the signing.yml ([e3cee42](https://github.com/keystonecms/keystone/commit/e3cee426cd881808fd66f9424a3f9cebfcbb34b0))
+
 ## [1.2.4](https://github.com/keystonecms/keystone/compare/v1.2.3...v1.2.4) (2026-01-26)
 
 
