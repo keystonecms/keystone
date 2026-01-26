@@ -30,7 +30,7 @@ jobs:
 
       - name: Sign release
         env:
-          KEYSTONE_SIGNING_KEY: ${{ secrets.KEYSTONE_SIGNING_KEY_B64 }}
+          KEYSTONE_SIGNING_KEY_B64: ${{ secrets.KEYSTONE_SIGNING_KEY_B64 }}
         run: |
           VERSION=${TAG#v}
 
