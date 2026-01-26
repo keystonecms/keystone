@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/keystonecms/keystone/compare/v1.2.1...v1.2.2) (2026-01-26)
+
+
+### Bug Fixes
+
+* correct update detection system ([0131aaa](https://github.com/keystonecms/keystone/commit/0131aaa6f0e06000dada770d64a70b61bee40557))
+
 ## [1.2.1](https://github.com/keystonecms/keystone/compare/v1.2.0...v1.2.1) (2026-01-26)
 
 
