@@ -1,3 +1,10 @@
+## [1.2.12](https://github.com/keystonecms/keystone/compare/v1.2.11...v1.2.12) (2026-01-26)
+
+
+### Bug Fixes
+
+* added missing v in url ([2c7080b](https://github.com/keystonecms/keystone/commit/2c7080b3b4fe91784516749cf005cff94227bd26))
+
 ## [1.2.11](https://github.com/keystonecms/keystone/compare/v1.2.10...v1.2.11) (2026-01-26)
 
 
