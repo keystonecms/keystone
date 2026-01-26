@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/keystonecms/keystone/compare/v1.2.0...v1.2.1) (2026-01-26)
+
+
+### Bug Fixes
+
+* clean up unnessecary code ([a64abf3](https://github.com/keystonecms/keystone/commit/a64abf3fd46421a41779876a55a829acd7a15866))
+
 # [1.2.0](https://github.com/keystonecms/keystone/compare/v1.1.0...v1.2.0) (2026-01-26)
 
 
