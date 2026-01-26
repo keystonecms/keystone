@@ -61,12 +61,11 @@ jobs:
           cat > latest.json <<EOF
           {
             "version": "$VERSION",
-            "zip": "https://github.com/keystonecms/keystone/releases/download/${VERSION}/keystone-${VERSION}.zip",
-            "signature": "https://github.com/keystonecms/keystone/releases/download/${VERSION}/keystone-$VERSION.zip.sig"
+            "zip": "https://github.com/keystonecms/keystone/releases/download/v${VERSION}/keystone-${VERSION}.zip",
+            "signature": "https://github.com/keystonecms/keystone/releases/download/v${VERSION}/keystone-$VERSION.zip.sig"
           }
           EOF
 
-    
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
