@@ -34,7 +34,7 @@ jobs:
         run: |
           VERSION=${TAG#v}
 
-          echo "$KEYSTONE_SIGNING_KEY_B64" > private.pem
+          echo "$KEYSTONE_SIGNING_KEY_B64" | base64 -d > private.pem
 
           openssl dgst -sha256 \
             -sign private.pem \
