@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/keystonecms/keystone/compare/v1.2.2...v1.2.3) (2026-01-26)
+
+
+### Bug Fixes
+
+* changed the ENV in signing.yml ([ce4981d](https://github.com/keystonecms/keystone/commit/ce4981d55f29638aa607e913a2948e31ba649cce))
+
 ## [1.2.2](https://github.com/keystonecms/keystone/compare/v1.2.1...v1.2.2) (2026-01-26)
 
 
