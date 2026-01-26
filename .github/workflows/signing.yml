@@ -49,8 +49,11 @@ jobs:
             -out keystone-${VERSION}.zip.sig \
             keystone-${VERSION}.zip
 
-          base64 keystone-${VERSION}.zip.sig \
-            > keystone-${VERSION}.zip.sig
+          openssl dgst -sha256 \
+            -sign private.pem \
+            -out keystone-${VERSION}.zip.sig \
+            keystone-${VERSION}.zip
+
 
           cat > latest.json <<EOF
             {
@@ -60,9 +63,9 @@ jobs:
             }
             EOF
 
-          ls -l latest.json
-          cat latest.json
-
+          ls -l keystone-$VERSION.zip.sig
+           
+          shred -u private.pem || rm -f private.pem
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
