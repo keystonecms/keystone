@@ -6,6 +6,9 @@ on:
     types:
       - completed
 
+permissions:
+  contents: write
+
 jobs:
   release:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -19,8 +22,13 @@ jobs:
       - name: Get latest tag
         run: |
           TAG=$(git describe --tags --abbrev=0)
+          VERSION=${TAG#v}
+
           echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
           echo "Signing tag: $TAG"
+          echo "Version: $VERSION"
 
       - name: Build release zip
         run: |
@@ -48,6 +56,12 @@ jobs:
             --arg v "$VERSION" \
             '{version:$v}' > latest.json
 
-      - name: Publish artifacts
-        run: |
-          echo "TODO: upload keystone-${VERSION}.zip, .sig en latest.json"
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          files: |
+            keystone-${{ env.VERSION }}.zip
+            keystone-${{ env.VERSION }}.zip.sig
+            latest.json
+
