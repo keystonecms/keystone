@@ -1,3 +1,10 @@
+## [1.2.10](https://github.com/keystonecms/keystone/compare/v1.2.9...v1.2.10) (2026-01-26)
+
+
+### Bug Fixes
+
+* cleanup signing.yml since it runs fine ([23a9acc](https://github.com/keystonecms/keystone/commit/23a9acce7d81fece074452da06cca147e301a986))
+
 ## [1.2.9](https://github.com/keystonecms/keystone/compare/v1.2.8...v1.2.9) (2026-01-26)
 
 
