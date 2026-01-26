@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/keystonecms/keystone/compare/v1.1.0...v1.2.0) (2026-01-26)
+
+
+### Features
+
+* auto signing of ZIP files ([549160b](https://github.com/keystonecms/keystone/commit/549160bbcaa6a8f40873256688ec492297a196c5))
+
 # [1.1.0](https://github.com/keystonecms/keystone/compare/v1.0.1...v1.1.0) (2026-01-25)
 
 
