@@ -1,3 +1,10 @@
+## [1.2.9](https://github.com/keystonecms/keystone/compare/v1.2.8...v1.2.9) (2026-01-26)
+
+
+### Bug Fixes
+
+* remove privatekey from runner when done ([9b0c6db](https://github.com/keystonecms/keystone/commit/9b0c6db546b946f2e1b52217ca15bc0e76c5e37f))
+
 ## [1.2.8](https://github.com/keystonecms/keystone/compare/v1.2.7...v1.2.8) (2026-01-26)
 
 
