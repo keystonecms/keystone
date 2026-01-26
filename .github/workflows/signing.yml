@@ -30,11 +30,11 @@ jobs:
 
       - name: Sign release
         env:
-          KEYSTONE_SIGNING_KEY: ${{ secrets.KEYSTONE_SIGNING_KEY }}
+          KEYSTONE_SIGNING_KEY: ${{ secrets.KEYSTONE_SIGNING_KEY_B64 }}
         run: |
           VERSION=${TAG#v}
 
-          echo "$KEYSTONE_SIGNING_KEY" > private.pem
+          echo "$KEYSTONE_SIGNING_KEY_B64" > private.pem
 
           openssl dgst -sha256 \
             -sign private.pem \
