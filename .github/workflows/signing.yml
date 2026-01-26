@@ -54,22 +54,25 @@ jobs:
             -out keystone-${VERSION}.zip.sig \
             keystone-${VERSION}.zip
 
-
-          cat > latest.json <<EOF
-            {
-              "version": "$VERSION",
-              "zip": "keystone-$VERSION.zip",
-              "signature": "keystone-$VERSION.zip.sig"
-            }
-            EOF
-
-          ls -l keystone-$VERSION.zip.sig
-           
           shred -u private.pem || rm -f private.pem
+
+      - name: Create latest.json
+        run: |
+          cat > latest.json <<EOF
+          {
+            "version": "$VERSION",
+            "zip": "keystone-$VERSION.zip",
+            "signature": "keystone-$VERSION.zip.sig"
+          }
+          EOF
+
+    
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
+          draft: false
+          prerelease: false
           files: |
             keystone-${{ env.VERSION }}.zip
             keystone-${{ env.VERSION }}.zip.sig
