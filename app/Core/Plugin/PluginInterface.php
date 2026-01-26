@@ -22,7 +22,7 @@ interface PluginInterface
 
     public function getDescription(): string;
 
-     public function getLoadOrder(): int;
+    public function getLoadOrder(): int;
 
 }
 

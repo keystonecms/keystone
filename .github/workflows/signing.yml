@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release zip
+        run: |
+          zip -r keystone-${GITHUB_REF_NAME#v}.zip . \
+            -x "*.git*" "node_modules/*" "vendor/*"
+
+      - name: Sign release
+        run: |
+          echo "$KEYSTONE_SIGNING_KEY" > private.pem
+
+          openssl dgst -sha256 \
+            -sign private.pem \
+            -out keystone-${GITHUB_REF_NAME#v}.zip.sig \
+            keystone-${GITHUB_REF_NAME#v}.zip
+
+          base64 keystone-${GITHUB_REF_NAME#v}.zip.sig \
+            > keystone-${GITHUB_REF_NAME#v}.zip.sig
+
+          jq -n \
+            --arg v "${GITHUB_REF_NAME#v}" \
+            '{version:$v}' > latest.json
+
+      - name: Publish artifacts
+        run: |
+          # upload zip + sig + latest.json

@@ -9,11 +9,23 @@ use ZipArchive;
 
 final class UpdaterService {
 
+    public function __construct(
+        private readonly SignatureVerifier $signatureVerifier
+    ) {}
+
+
+
 public function activate(
     string $zipPath,
     string $version,
     string $projectRoot
 ): void {
+
+    $this->signatureVerifier->verify(
+        $zipPath,
+        $zipPath . '.sig'
+    );
+
     // 1. Dry-run eerst
     $result = $this->dryRun($zipPath);
 
@@ -39,8 +51,13 @@ public function activate(
 }
 
 
-    public function dryRun(string $zipPath): PreflightResult
-    {
+    public function dryRun(string $zipPath): PreflightResult {
+
+        $this->signatureVerifier->verify(
+            $zipPath,
+            $zipPath . '.sig'
+        );
+
         $result = new PreflightResult();
 
         // 1. PHP version

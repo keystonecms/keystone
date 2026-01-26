@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "updated_at": "2026-01-24",
+  "updated_at": "2026-01-26",
   "plugins": [
     {
       "name": "Pages",
       "slug": "pages",
-      "package": "keystone/plugin-pages",
+      "package": "keystonecms/plugin-pages",
       "description": "Core pages and routing functionality",
       "author": "Keystone CMS",
       "homepage": "https://github.com/keystonecms/plugin-pages",
@@ -16,11 +16,21 @@
     {
       "name": "Auth",
       "slug": "auth",
-      "package": "keystone/plugin-auth",
+      "package": "keystonecms/plugin-auth",
       "description": "Authentication and account security",
       "author": "Keystone CMS",
       "homepage": "https://github.com/keystonecms/plugin-auth",
       "category": "security",
+      "min_keystone": "^1.0"
+    },
+    {
+      "name": "ShoppingCart",
+      "slug": "shoppingcart",
+      "package": "keystonecms/plugin-shoppingcart",
+      "description": "Fully functioning shopping cart",
+      "author": "Keystone CMS",
+      "homepage": "https://github.com/keystonecms/plugin-shoppingcart",
+      "category": "shopping",
       "min_keystone": "^1.0"
     }
   ]

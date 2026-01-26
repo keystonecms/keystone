@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8aa59f4e4b9573c85da88c6d0055a77",
+    "content-hash": "513a6429413ad1beb742298bb4cc8dd3",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -687,7 +687,7 @@
             "time": "2025-08-23T21:21:41+00:00"
         },
         {
-            "name": "keystone/plugin-pages",
+            "name": "keystonecms/plugin-pages",
             "version": "v1.0.2",
             "source": {
                 "type": "git",
@@ -711,11 +711,44 @@
                     "Keystone\\Plugin\\Pages\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "support": {
-                "source": "https://github.com/keystonecms/plugin-pages/tree/v1.0.2",
-                "issues": "https://github.com/keystonecms/plugin-pages/issues"
+                "issues": "https://github.com/keystonecms/plugin-pages/issues",
+                "source": "https://github.com/keystonecms/plugin-pages/tree/v1.0.2"
             },
             "time": "2026-01-25T19:05:23+00:00"
+        },
+        {
+            "name": "keystonecms/plugin-shoppingcart",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/keystonecms/plugin-shoppingcart.git",
+                "reference": "3006153b5465444c4c3bf0140bbbc6b0f993a094"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/keystonecms/plugin-shoppingcart/zipball/3006153b5465444c4c3bf0140bbbc6b0f993a094",
+                "reference": "3006153b5465444c4c3bf0140bbbc6b0f993a094",
+                "shasum": ""
+            },
+            "type": "keystone-plugin",
+            "extra": {
+                "keystone": {
+                    "plugin-class": "Keystone\\Plugin\\ShoppingCart\\Plugin"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Keystone\\Plugin\\ShoppingCart\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "issues": "https://github.com/keystonecms/plugin-shoppingcart/issues",
+                "source": "https://github.com/keystonecms/plugin-shoppingcart/tree/v1.0.2"
+            },
+            "time": "2026-01-26T10:28:48+00:00"
         },
         {
             "name": "laravel/serializable-closure",

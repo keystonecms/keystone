@@ -16,7 +16,7 @@ final class PluginInstallerService {
 
 public function install(string $package): void {
 
-       if (!str_starts_with($package, 'keystone/plugin')) {
+       if (!str_starts_with($package, 'keystonecms/plugin')) {
         throw new RuntimeException(
             "Invalid package name [$package]. Expected vendor/package."
         );

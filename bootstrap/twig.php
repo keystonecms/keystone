@@ -36,7 +36,7 @@ $twig->getEnvironment()->addGlobal('keystone', ['version' => KEYSTONE_VERSION]);
 $twig->getEnvironment()->addFunction(new TwigFunction('asset', fn (string $path) => '/plugins/' . ltrim($path, '/')));
 $twig->getEnvironment()->addGlobal('admin_menu',$container->get(AdminMenuRegistry::class)->all());
 $twig->getEnvironment()->addExtension($container->get(LocaleTwigExtension::class));
-$twig->getEnvironment()->addExtension($container->get(\Keystone\Twig\TranslationTwigExtension::class)
-);
+$twig->getEnvironment()->addExtension($container->get(\Keystone\Twig\TranslationTwigExtension::class));
+$twig->getEnvironment()->addGlobal('update', $updates->getStatus());
 
 ?>

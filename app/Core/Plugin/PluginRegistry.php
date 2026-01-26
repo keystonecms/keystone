@@ -29,6 +29,7 @@ public function allIndexedByPackage(): array
 }
 
 public function install(PluginDescriptor $plugin): void {
+        
         $now = new DateTimeImmutable();
 
         $stmt = $this->db->prepare(
