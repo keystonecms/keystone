@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/keystonecms/keystone/compare/v1.2.5...v1.2.6) (2026-01-26)
+
+
+### Bug Fixes
+
+* changed to base64 decode to private key ([6a0ae83](https://github.com/keystonecms/keystone/commit/6a0ae831f0105237d38edb92653c40db96a9ea89))
+
 ## [1.2.5](https://github.com/keystonecms/keystone/compare/v1.2.4...v1.2.5) (2026-01-26)
 
 
