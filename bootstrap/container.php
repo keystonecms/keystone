@@ -134,8 +134,18 @@ return [
                 BASE_PATH . '/templates',
                 'core'
             );
-        }
 
+            try {
+                $status = $c
+                    ->get(\Keystone\Infrastructure\Update\UpdateStatusService::class)
+                    ->getStatus();
+
+                $twig->getEnvironment()->addGlobal('update', $status);
+            } catch (\Throwable $e) {
+                // fail-safe: UI mag nooit breken
+                $twig->getEnvironment()->addGlobal('update', null);
+            }
+        }
         return $twig;
     },
     IpInfoClient::class => function ($c) {

@@ -2,12 +2,18 @@
 
 namespace Keystone\Infrastructure\Update;
 
+use Keystone\Infrastructure\Paths;
 
 final class VersionReader {
-    public function current(): string
-    {
+
+   public function __construct(
+    private Paths $paths
+   ) {}
+
+    public function current(): string {
+
         return trim(
-            file_get_contents(base_path('VERSION'))
+            file_get_contents($this->paths->base() . '/VERSION')
         );
     }
 }

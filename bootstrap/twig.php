@@ -4,7 +4,8 @@ use Slim\Views\Twig;
 use Slim\Interfaces\RouteParserInterface;
 use Twig\TwigFunction;
 use Keystone\Twig\LocaleTwigExtension;
-
+use Twig\Extension\DebugExtension;
+use Twig\Environment;
 use Keystone\Admin\Menu\AdminMenuRegistry;
 
 
@@ -29,6 +30,7 @@ $twig->getEnvironment()->addGlobal(
     'auth',
     $container->get(\Keystone\Domain\User\CurrentUser::class)
 );
+
 $twig->getEnvironment()->addGlobal('url', $_ENV['APP_URL'] ?? 'http://localhost');
 $twig->getEnvironment()->addGlobal('sitename', $_ENV['SITENAME'] ?? 'KeyStone');
 $twig->getEnvironment()->addGlobal('base_path', $app->getBasePath());
@@ -37,5 +39,11 @@ $twig->getEnvironment()->addFunction(new TwigFunction('asset', fn (string $path)
 $twig->getEnvironment()->addGlobal('admin_menu',$container->get(AdminMenuRegistry::class)->all());
 $twig->getEnvironment()->addExtension($container->get(LocaleTwigExtension::class));
 $twig->getEnvironment()->addExtension($container->get(\Keystone\Twig\TranslationTwigExtension::class));
+
+if ($_ENV['APP_ENV'] === 'dev') {
+            $twig->getEnvironment()->enableDebug();
+            $twig->getEnvironment()->addExtension(new DebugExtension());
+        }
+
 
 ?>
