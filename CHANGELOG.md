@@ -1,3 +1,10 @@
+## [1.2.8](https://github.com/keystonecms/keystone/compare/v1.2.7...v1.2.8) (2026-01-26)
+
+
+### Bug Fixes
+
+* signing.yml changed cat instead of jq ([3859b4b](https://github.com/keystonecms/keystone/commit/3859b4b908ba4c30ebe9f6599fd81dcfea59e5a8))
+
 ## [1.2.7](https://github.com/keystonecms/keystone/compare/v1.2.6...v1.2.7) (2026-01-26)
 
 
