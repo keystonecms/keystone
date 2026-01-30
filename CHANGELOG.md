@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/keystonecms/keystone/compare/v1.3.0...v1.3.1) (2026-01-30)
+
+
+### Bug Fixes
+
+* removed plugins from composer.json ([28fe1c1](https://github.com/keystonecms/keystone/commit/28fe1c15f5561c6c96904737d4da879f0d9f731c))
+
 # [1.3.0](https://github.com/keystonecms/keystone/compare/v1.2.12...v1.3.0) (2026-01-30)
 
 
