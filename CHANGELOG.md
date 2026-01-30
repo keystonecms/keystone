@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/keystonecms/keystone/compare/v1.2.12...v1.3.0) (2026-01-30)
+
+
+### Features
+
+* added install script and webbases installer ([addf30f](https://github.com/keystonecms/keystone/commit/addf30f54905332ae6323565be781bc80c343c1e))
+
 ## [1.2.12](https://github.com/keystonecms/keystone/compare/v1.2.11...v1.2.12) (2026-01-26)
 
 
