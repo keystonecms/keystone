@@ -27,7 +27,11 @@ declare(strict_types=1);
 
 const INSTALLER_VERSION = '1.0.0';
 const UPDATE_LATEST_URL = 'https://github.com/keystonecms/keystone/releases/latest/download/latest.json';
-
+const INSTALL_PROFILES = [
+    'default' => ['pages', 'auth', 'shoppingcart'],
+    'blog'    => ['pages', 'auth', 'media', 'seo'],
+    'empty'   => [],
+];
 
 function fail(string $message): void {
     fwrite(STDERR, "✖ $message\n");
@@ -41,6 +45,22 @@ function info(string $message): void {
 function success(string $message): void {
     echo "✔ $message\n";
 }
+
+$options = getopt('', [
+    'root::',
+    'with::',
+    'force',
+]);
+
+
+$profile = $options['profile'] ?? 'default';
+$plugins = INSTALL_PROFILES[$profile] ?? INSTALL_PROFILES['default'];
+
+$webRoot      = $options['root'] ?? 'public_html';
+$defaultPlugins = isset($options['with'])
+    ? array_map('trim', explode(',', $options['with']))
+    : $plugins;
+$force = array_key_exists('force', $options);
 
 echo "Keystone CMS Installer v" . INSTALLER_VERSION . PHP_EOL;
 echo str_repeat('-', 40) . PHP_EOL;
@@ -229,9 +249,88 @@ foreach ($links as $link => $target) {
         symlink($target, $link);
     }
 }
+/* ------------------------------------------------------------
+ | 10. Fetching plugins to install
+ * ------------------------------------------------------------ */
+
+info('Fetching plugin catalog');
+
+$catalogUrl = 'https://raw.githubusercontent.com/keystonecms/plugin-catalog/main/plugins.json';
+
+$catalogJson = file_get_contents($catalogUrl);
+if ($catalogJson === false) {
+    fail('Unable to download plugin catalog');
+}
+
+$catalog = json_decode($catalogJson, true);
+if (!is_array($catalog)) {
+    fail('Invalid plugin catalog JSON');
+}
+
+if (!isset($catalog['plugins']) || !is_array($catalog['plugins'])) {
+    fail('Plugin catalog has no plugins array');
+}
+
+info('Normalizing plugin catalog');
+
+$catalogBySlug = [];
+
+foreach ($catalog['plugins'] as $plugin) {
+    if (!isset($plugin['slug'], $plugin['package'])) {
+        continue;
+    }
+
+    $slug = trim(strtolower($plugin['slug']));
+    $catalogBySlug[$slug] = $plugin;
+}
+
+info('Resolving plugin packages');
+
+$defaultPlugins = array_map(
+    fn ($p) => trim(strtolower($p)),
+    $defaultPlugins
+);
+
+$packages = [];
+
+foreach ($defaultPlugins as $plugin) {
+    if (!isset($catalogBySlug[$plugin])) {
+        fail(
+            "Unknown plugin: $plugin\n" .
+            "Available plugins: " . implode(', ', array_keys($catalogBySlug))
+        );
+    }
+
+    $packages[] = $catalogBySlug[$plugin]['package'];
+}
+
+if ($packages) {
+    info('Installing default plugins via Composer');
+
+    $cmd = 'composer require ' . implode(' ', $packages) . ' --no-interaction';
+
+    passthru($cmd, $code);
+
+    if ($code !== 0) {
+        fail('Failed to install plugins via Composer');
+    }
+
+    success('Default plugins installed');
+}
+
+info('Verifying installed plugins');
+
+foreach ($packages as $package) {
+    [$vendor, $name] = explode('/', $package, 2);
+    $path = "$currentLink/vendor/$vendor/$name";
+
+    if (!is_dir($path)) {
+        fail("Plugin package missing after install: $package");
+    }
+}
 
 /* ------------------------------------------------------------
- | 10. Run composer install
+ | 11. Run composer install
  * ------------------------------------------------------------ */
 
 info('Running composer install');
@@ -244,6 +343,37 @@ if ($code !== 0) {
 }
 
 /* ------------------------------------------------------------
+ | 12. Determine webroot and copy htaccess and index.php to it
+ * ------------------------------------------------------------ */
+$publicDir = "$currentLink/$webRoot";
+
+info("Using web root: $publicDir");
+
+if (!is_dir($publicDir)) {
+    fail("Web root directory does not exist: $webRoot");
+   }
+
+info('Setting up entry files');
+
+$indexSource = "$currentLink/resources/index.php.dist";
+$indexTarget = "$publicDir/index.php";
+
+if (!file_exists($indexTarget) || $force) {
+    copy($indexSource, $indexTarget);
+    success('index.php created');
+} else {
+    info('index.php already exists, skipping');
+}
+
+$htaccessSource = "$currentLink/resources/htaccess";
+$htaccessTarget = "$publicDir/.htaccess";
+
+if (!file_exists($htaccessTarget) || $force) {
+    copy($htaccessSource, $htaccessTarget);
+    success('.htaccess created');
+}
+
+/* ------------------------------------------------------------
  | Done
  * ------------------------------------------------------------ */
 
@@ -251,8 +381,8 @@ echo PHP_EOL;
 success('Keystone CMS installed successfully');
 echo PHP_EOL;
 echo "Next steps:\n";
-echo "1. Point your webserver to: $currentLink/public\n";
-echo "2. Open your browser and go to: /install\n";
+echo "1. Point your webserver to: $currentLink/$webRoot\n";
+echo "2. Open your browser and go to: /installer\n";
 echo PHP_EOL;
 
 ?>
