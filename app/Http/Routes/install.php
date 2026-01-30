@@ -2,23 +2,18 @@
 
 declare(strict_types=1);
 
-use Keystone\Http\Controller\InstallController;
-use Slim\Routing\RouteCollectorProxy;
+use Keystone\Http\Controllers\InstallController;
 
-return static function (\Slim\App $app): void {
-
-    $app->group('/install', function (RouteCollectorProxy $group): void {
+    $app->group('/installer', function ($group) {
 
         // UI shell
-        $group->get('', InstallController::class . ':index');
+        $group->get('',[InstallController::class , 'index']);
 
         // AJAX / JSON
-        $group->post('/check', InstallController::class . ':check');
-        $group->post('/database', InstallController::class . ':database');
-        $group->post('/admin', InstallController::class . ':admin');
-
-    });
-};
+        $group->get('/step/{step}', [InstallController::class, 'step']);
+        $group->post('/run', [InstallController::class, 'run']);
+        $group->post('/commit', [InstallController::class, 'commit']);
+});
 
 
 ?>

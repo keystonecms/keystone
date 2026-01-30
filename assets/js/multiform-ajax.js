@@ -41,8 +41,6 @@ $(document).ready(function () {
     });
 
     function handleResponse(response, reload, formID) {
-   
-        console.log("token "+response.csrfToken);
 
         if (response.csrfToken) {
             $('input[name="_csrf_token"]').val(response.csrfToken);
@@ -69,6 +67,10 @@ $(document).ready(function () {
             return;
         }
 
+        if (response.output) {
+            showOutput(response.output);
+            }
+
 
             if (reload) {
                 setTimeout(function () {
@@ -78,6 +80,16 @@ $(document).ready(function () {
                 $('#' + formID).trigger('reset');
             }
         }
+    }
+
+    function showOutput(message) {
+        $('.alert.alert-success')
+            .removeClass('d-none')
+            .addClass('d-block');
+            $('div#output')
+            .removeClass('d-none')
+            .addClass('d-block')
+            .html(message);
     }
 
     function showError(message) {

@@ -1,0 +1,16 @@
+<ul class="list-group">
+    <h2>dry-run results</h2>
+  {% for check in checks %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ check.message }}
+      </span>
+
+      {% if check.ok %}
+        <span class="badge bg-success">OK</span>
+      {% else %}
+        <span class="badge bg-danger">Fail</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

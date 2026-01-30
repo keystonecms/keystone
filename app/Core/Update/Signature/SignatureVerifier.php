@@ -24,11 +24,15 @@ final class SignatureVerifier {
         $publicKey = $this->keys->get();
 
         $data = file_get_contents($zipPath);
-        $signature = base64_decode(
-            file_get_contents($signaturePath),
-            true
-        );
-dd($signaturePath);
+        if ($data === false) {
+            throw new RuntimeException('Unable to read zip file');
+        }
+
+        $signature = file_get_contents($signaturePath);
+        
+        if ($signature === false) {
+            throw new RuntimeException('Unable to read signature file');
+        }
 
         $ok = openssl_verify(
             $data,
@@ -38,8 +42,9 @@ dd($signaturePath);
         );
 
         if ($ok !== 1) {
-            throw new SignatureException('Invalid update signature');
+            throw new RuntimeException('Signature verification failed');
         }
+
     }
 }
 

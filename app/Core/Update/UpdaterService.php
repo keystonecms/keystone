@@ -134,7 +134,6 @@ public function activate(
             $ok = is_dir($tmpDir . '/' . $dir);
             $result->add("dir:$dir", $ok, $dir);
         }
-
         return $result;
     }
 }

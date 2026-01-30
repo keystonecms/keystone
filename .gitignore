@@ -27,3 +27,4 @@ storage/*
 uploads/*
 push-info.txt
 composer.local.json
+installed.lock

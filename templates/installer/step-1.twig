@@ -1,23 +1,10 @@
-{% extends "base.twig" %}
+<h2>Start Install Keystone CMS</h2>
 
-{% block content %}
-<h1>Keystone CMS installatie</h1>
+<div class="actions">
+    <button id="env-check-btn" onclick="Installer.runEnvironmentCheck()">
+        Run system check
+    </button>
+</div>
 
-<ul>
-    <li>PHP >= 8.2 ✔</li>
-    <li>PDO MySQL ✔</li>
-    <li>/storage writable ✔</li>
-</ul>
-
-<form method="post" action="/install/database">
-    <h3>Database</h3>
-
-    <input name="db_host" placeholder="localhost" required>
-    <input name="db_name" placeholder="keystone" required>
-    <input name="db_user" placeholder="root" required>
-    <input name="db_pass" type="password">
-
-    <button class="btn btn-primary">Volgende</button>
-</form>
-{% endblock %}
+<div id="results"></div>
 

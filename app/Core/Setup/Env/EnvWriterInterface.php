@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Keystone\Core\Setup\Env;
 
-interface EnvWriterInterface
-{
+interface EnvWriterInterface {
     /**
      * @param array<string, string> $values
      */

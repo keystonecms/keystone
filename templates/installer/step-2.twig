@@ -1,0 +1,28 @@
+<h2>Database configuration</h2>
+<p>Please enter your database connection details.</p>
+
+<div id="db-errors"></div>
+
+<div class="field">
+    <label>Host</label>
+    <input id="dbHost" value="127.0.0.1">
+</div>
+
+<div class="field">
+    <label>Database name</label>
+    <input id="dbName">
+</div>
+
+<div class="field">
+    <label>Username</label>
+    <input id="dbUser">
+</div>
+
+<div class="field">
+    <label>Password</label>
+    <input id="dbPass" type="password">
+</div>
+
+<div class="actions">
+    <button id="env-check-btn" onclick="Installer.submitDatabase()">Continue</button>
+</div>

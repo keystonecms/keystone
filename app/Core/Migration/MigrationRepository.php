@@ -8,33 +8,31 @@ use PDO;
 
 final class MigrationRepository {
 
-
-    public function __construct(
-        private PDO $pdo
-    ) {}
-
-    public function hasRun(string $plugin, string $version): bool
-    {
-        $stmt = $this->pdo->prepare(
-            'SELECT COUNT(*) FROM migrations WHERE plugin = :plugin AND version = :version'
+    public function hasRun(PDO $pdo, string $plugin, string $version): bool {
+        $stmt = $pdo->prepare(
+            'SELECT 1
+             FROM migrations
+             WHERE plugin = :plugin
+               AND version = :version
+             LIMIT 1'
         );
+
         $stmt->execute([
-            'plugin' => $plugin,
+            'plugin'  => $plugin,
             'version' => $version,
         ]);
 
-        return (int) $stmt->fetchColumn() > 0;
+        return (bool) $stmt->fetchColumn();
     }
 
-    public function markAsRun(string $plugin, string $version): void
-    {
-        $stmt = $this->pdo->prepare(
+    public function markAsRun(PDO $pdo, string $plugin, string $version): void {
+        $stmt = $pdo->prepare(
             'INSERT INTO migrations (plugin, version, executed_at)
              VALUES (:plugin, :version, NOW())'
         );
 
         $stmt->execute([
-            'plugin' => $plugin,
+            'plugin'  => $plugin,
             'version' => $version,
         ]);
     }

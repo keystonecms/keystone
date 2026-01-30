@@ -138,7 +138,7 @@ return [
 
             try {
                 $status = $c
-                    ->get(\Keystone\Infrastructure\Update\UpdateStatusService::class)
+                    ->get(\Keystone\Core\Update\UpdateStatusService::class)
                     ->getStatus();
 
                 $twig->getEnvironment()->addGlobal('update', $status);
@@ -152,7 +152,7 @@ return [
     IpInfoClient::class => function ($c) {
         return new IpInfoClient(
             $c->get(Client::class),
-            $c->get('settings')['ipinfo']['token']
+            $c->get('settings')['ipinfo']['token'] ?? null
             );
     },
 
@@ -218,7 +218,7 @@ return [
     CsrfMiddleware::class => DI\autowire(),
 
 /**
- * autowire statements 
+ * autowire statements
  */
    PluginRegistryInterface::class => DI\autowire(PluginRegistry::class),
    PluginSyncServiceInterface::class => DI\autowire(PluginSyncService::class),

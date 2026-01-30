@@ -67,7 +67,8 @@ public function dryRun(
 
     return $this->json($response, [
         'status'  => 'success',
-        'message' => $result->isOk() . " " . $result->toArray()
+        'message' => 'The dry run ran successfull below the results of the dry-run',
+        'output' => $this->view->fetch('@core/admin/partials/upgrade.twig',[ 'checks' => $result->all() ])
         ]);
 
         } catch (\Throwable $e) {

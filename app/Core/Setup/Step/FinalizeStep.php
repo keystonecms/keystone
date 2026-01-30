@@ -9,31 +9,48 @@ use Keystone\Core\Setup\InstallerState;
 use Keystone\Core\Setup\SetupConfig;
 use RuntimeException;
 
-final class FinalizeStep implements InstallerStepInterface
-{
+final class FinalizeStep extends AbstractInstallerStep {
+
+
     public function __construct(
         private EnvWriterInterface $envWriter,
         private SetupConfig $config
     ) {}
 
-    public function run(InstallerState $state): void
-    {
-        if ($state->dryRun) {
-            return;
+    public function getName(): string {
+        return 'finalize';
+    }
+
+    public function getTitle(): string {
+    return 'Finalize the Installation';
+    }
+
+    public function getDescription(): string {
+        return 'Finalize installation description.';
         }
 
-        $this->envWriter->write([
-            'APP_ENV'    => 'production',
+
+    public function shouldRun(InstallerState $state): bool {
+        return true;
+    }
+
+    public function run(InstallerState $state): void {
+
+    $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https://' : 'http://';
+
+    $this->envWriter->write([
+            'DB_DSN'  => 'mysql:host='.$state->dbHost.';dbname='.$state->dbName,
+            'DB_HOST' => $state->dbHost,
+            'DB_NAME' => $state->dbName,
+            'DB_USER' => $state->dbUser,
+            'DB_PASS' => $state->dbPass,
             'APP_DEBUG' => '0',
-            'DB_HOST'   => $state->dbHost,
-            'DB_PORT'   => (string) $state->dbPort,
-            'DB_NAME'   => $state->dbName,
-            'DB_USER'   => $state->dbUser ?? '',
-            'DB_PASS'   => $state->dbPass ?? '',
+            'APP_ENV' => 'prod',
+            'SITENAME' => 'Keystone CSM 4U',
         ]);
 
-        if (!file_exists($this->config->lockFilePath)) {
-            file_put_contents($this->config->lockFilePath, 'installed');
-        }
+
     }
 }
+
+?>

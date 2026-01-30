@@ -36,8 +36,7 @@ final class ReleaseManifest {
         public readonly array $sharedSymlinks
     ) {}
 
-    public static function fromArray(array $data): self
-    {
+    public static function fromArray(array $data): self {
         return new self(
             name: $data['name'],
             version: $data['version'],

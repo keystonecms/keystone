@@ -1,50 +1,60 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Keystone\Core\Setup\Step;
 
-use Keystone\Core\Setup\EnvironmentRequirements;
-use Keystone\Core\Setup\Exception\EnvironmentCheckFailed;
 use Keystone\Core\Setup\InstallerState;
-use Keystone\Core\Setup\System\PhpVersionCheckerInterface;
-use Keystone\Core\Setup\System\PhpExtensionCheckerInterface;
-use Keystone\Core\Setup\System\WritablePathCheckerInterface;
 
-final class CheckEnvironmentStep implements InstallerStepInterface
-{
-    public function __construct(
-        private PhpVersionCheckerInterface $phpVersionChecker,
-        private PhpExtensionCheckerInterface $extensionChecker,
-        private WritablePathCheckerInterface $pathChecker,
-        private EnvironmentRequirements $requirements,
-    ) {}
+final class CheckEnvironmentStep extends AbstractInstallerStep {
 
-    public function run(InstallerState $state): void
-    {
-        $errors = [];
+public function getName(): string {
+        return 'environment';
+    }
 
-        if (!$this->phpVersionChecker->isSatisfied($this->requirements->minPhpVersion)) {
-            $errors[] = 'PHP version too low';
+   public function getTitle(): string {
+    return 'Environment check';
+    }
+
+    public function getDescription(): string {
+        return 'Checking all the settings in your environment to determine if Keystone CMS can run safely. ' .
+            'We verify your PHP version, required extensions and file permissions.';
         }
 
-        foreach ($this->requirements->requiredExtensions as $extension) {
-            if (!$this->extensionChecker->isLoaded($extension)) {
-                $errors[] = sprintf('Missing extension: %s', $extension);
+    public function run(InstallerState $state): void {
+        $errors = [];
+
+        if (version_compare(PHP_VERSION, '8.3', '<')) {
+            $errors[] = 'PHP 8.3 or higher is required';
+        }
+
+        $requiredExtensions = [
+            'pdo',
+            'pdo_mysql',
+            'mbstring',
+            'json',
+            'zip',
+        ];
+
+        foreach ($requiredExtensions as $ext) {
+            if (!extension_loaded($ext)) {
+                $errors[] = "Missing PHP extension: {$ext}";
             }
         }
 
-        foreach ($this->requirements->writablePaths as $path) {
-            if (!$this->pathChecker->isWritable($path)) {
-                $errors[] = sprintf('Path not writable: %s', $path);
+        $writablePaths = [
+            'storage',
+            'cache',
+        ];
+
+        foreach ($writablePaths as $path) {
+            if (!is_writable(BASE_PATH . '/' . $path)) {
+                $errors[] = "Directory not writable: {$path}";
             }
         }
 
         if ($errors !== []) {
-            throw new EnvironmentCheckFailed(implode("\n", $errors));
+            throw new InstallerException($errors);
         }
     }
 }
-
 
 ?>

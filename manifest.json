@@ -11,11 +11,12 @@
     "files": [
       "bootstrap/app.php",
       "public/index.php",
-      "vendor/autoload.php"
+      "config/settings.php"
     ],
     "directories": [
       "src",
-      "plugins",
+      "database/migrations",
+      "docs",
       "public"
     ]
   },

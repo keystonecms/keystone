@@ -38,6 +38,16 @@ final class UpdateSource {
         private readonly Paths $paths
     ) {}
 
+    public function latestMeta(): array {
+        $json = file_get_contents($this->urls->updateLatest());
+
+        if ($json === false) {
+            throw new \RuntimeException('Unable to fetch latest.json');
+        }
+
+        return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+    }
+
     public function downloadLatest(): string {
 
         $meta = json_decode(
@@ -64,21 +74,10 @@ final class UpdateSource {
         $zipPath = $tmpDir . '/' . basename($zipUrl);
         $sigPath = $zipPath . '.sig';
 
-dd($zipUrl);
-
         file_put_contents($zipPath, file_get_contents($zipUrl));
         file_put_contents($sigPath, file_get_contents($sigUrl));
 
         return $zipPath;
-    }
-
-public function latestVersion(): string {
-
-        $json = file_get_contents(
-             $this->urls->updateLatest()
-        );
-
-        return json_decode($json, true)['version'];
     }
 }
 

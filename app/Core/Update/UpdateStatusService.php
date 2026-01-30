@@ -15,12 +15,11 @@ final class UpdateStatusService {
         private UpdateSource $updateSource,
     ) {}
 
-    public function getStatus(): UpdateStatus
-    {
+    public function getStatus(): UpdateStatus {
 
     $current = $this->versionReader->current();
 
-    $latest  = $this->updateSource->latestVersion();
+    $latest  = $this->latestVersion();
 
     return new UpdateStatus(
             current: $current,
@@ -28,8 +27,19 @@ final class UpdateStatusService {
             hasUpdate: version_compare($latest, $current, '>')
         );
     }
-}
 
+
+    public function latestVersion(): string {
+        $meta = $this->updateSource->latestMeta();
+
+        if (!isset($meta['version'])) {
+            throw new \RuntimeException('latest.json missing version');
+        }
+
+        return ltrim($meta['version'], 'v');
+    }
+
+}
 
 
 

@@ -8,7 +8,7 @@ final class IpInfoClient {
 
 public function __construct(
         private Client $http,
-        private string $token
+        private ?string $token = null
     ) { }
 
     public function fetch(string $ip): array
