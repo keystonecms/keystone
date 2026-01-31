@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/keystonecms/keystone/compare/v1.3.1...v1.3.2) (2026-01-31)
+
+
+### Bug Fixes
+
+* changed config from symlink to directory ([541a5b6](https://github.com/keystonecms/keystone/commit/541a5b6a1f0c3a8513004706e5162c3452cf0e3c))
+
 ## [1.3.1](https://github.com/keystonecms/keystone/compare/v1.3.0...v1.3.1) (2026-01-30)
 
 
