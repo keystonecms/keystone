@@ -33,6 +33,7 @@ const INSTALL_PROFILES = [
     'empty'   => [],
 ];
 
+
 function fail(string $message): void {
     fwrite(STDERR, "✖ $message\n");
     exit(1);
@@ -45,6 +46,21 @@ function info(string $message): void {
 function success(string $message): void {
     echo "✔ $message\n";
 }
+
+function ensureSymlink(string $target, string $link): void {
+    
+    if (is_link($link)) {
+        // correct link bestaat al
+        return;
+    }
+
+    if (file_exists($link)) {
+        fail("Cannot create symlink, path exists: $link");
+    }
+
+    symlink($target, $link);
+}
+
 
 $options = getopt('', [
     'root::',
@@ -101,6 +117,7 @@ info("Installing in: $root");
 $releasesDir = $root . '/releases';
 $sharedDir   = $root . '/shared';
 $currentLink = $root . '/current';
+$publicDir = $root . '/' . $webRoot;
 
 @mkdir($releasesDir, 0775, true);
 @mkdir($sharedDir, 0775, true);
@@ -229,7 +246,7 @@ symlink("releases/$version", $currentLink);
 
 info('Creating shared directories');
 
-foreach (['storage', 'uploads', 'cache'] as $dir) {
+foreach (['config','storage', 'uploads', 'cache'] as $dir) {
     @mkdir("$sharedDir/$dir", 0775, true);
 }
 
@@ -240,8 +257,8 @@ foreach (['storage', 'uploads', 'cache'] as $dir) {
 info('Creating application symlinks');
 
 $links = [
-    "$currentLink/storage"        => "../shared/storage",
-    "$currentLink/public/uploads" => "../../shared/uploads",
+    "$currentLink/storage"        => $root."/shared/storage",
+    "$currentLink/public/uploads" => $root."/shared/uploads",
 ];
 
 foreach ($links as $link => $target) {
@@ -252,6 +269,8 @@ foreach ($links as $link => $target) {
 /* ------------------------------------------------------------
  | 10. Fetching plugins to install
  * ------------------------------------------------------------ */
+info('Switching to current release directory');
+chdir($currentLink);
 
 info('Fetching plugin catalog');
 
@@ -335,7 +354,6 @@ foreach ($packages as $package) {
 
 info('Running composer install');
 
-chdir($currentLink);
 passthru('composer install --no-dev --optimize-autoloader', $code);
 
 if ($code !== 0) {
@@ -345,7 +363,6 @@ if ($code !== 0) {
 /* ------------------------------------------------------------
  | 12. Determine webroot and copy htaccess and index.php to it
  * ------------------------------------------------------------ */
-$publicDir = "$currentLink/$webRoot";
 
 info("Using web root: $publicDir");
 
@@ -373,6 +390,20 @@ if (!file_exists($htaccessTarget) || $force) {
     success('.htaccess created');
 }
 
+
+/* ------------------------------------------------------------
+ | Just creating some symlinks for assets and themes
+ * ------------------------------------------------------------ */
+info('Creating public asset symlinks');
+
+ensureSymlink($currentLink.'/assets/',  $publicDir . '/assets');
+ensureSymlink($currentLink.'/themes/default/assets/', $publicDir . '/themes');
+
+mkdir('plugins');
+
+ensureSymlink($currentLink.'/plugins/', $publicDir . '/plugins');
+
+success('Public symlinks created');
 /* ------------------------------------------------------------
  | Done
  * ------------------------------------------------------------ */
@@ -381,7 +412,7 @@ echo PHP_EOL;
 success('Keystone CMS installed successfully');
 echo PHP_EOL;
 echo "Next steps:\n";
-echo "1. Point your webserver to: $currentLink/$webRoot\n";
+echo "1. Point your webserver to: $publicDir\n";
 echo "2. Open your browser and go to: /installer\n";
 echo PHP_EOL;
 

@@ -21,7 +21,7 @@ Maildir/
 shared/
 storage/
 releases/
-.env
+config/.env
 var/
 storage/*
 uploads/*

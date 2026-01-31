@@ -3,6 +3,7 @@
 namespace Keystone\Core\Setup\Step;
 
 use Keystone\Core\Setup\InstallerState;
+use Keystone\Core\Setup\InstallerException;
 
 final class CheckEnvironmentStep extends AbstractInstallerStep {
 
