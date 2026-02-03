@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/keystonecms/keystone/compare/v1.3.2...v1.4.0) (2026-02-03)
+
+
+### Features
+
+* add cli commands to ease creating plugins, create a skeleton, add a plugin and the plugin doctor. ([96df5ff](https://github.com/keystonecms/keystone/commit/96df5ffe7b9bd5bf5fa290de61e9fb95aad8933f))
+
 ## [1.3.2](https://github.com/keystonecms/keystone/compare/v1.3.1...v1.3.2) (2026-01-31)
 
 
