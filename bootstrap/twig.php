@@ -6,8 +6,12 @@ use Twig\TwigFunction;
 use Keystone\Twig\LocaleTwigExtension;
 use Twig\Extension\DebugExtension;
 use Twig\Environment;
-use Keystone\Admin\Menu\AdminMenuRegistry;
 
+use Slim\Routing\RouteParser;
+use Slim\App;
+
+use Keystone\Admin\Menu\AdminMenuRegistry;
+use Keystone\Core\Security\BotGuard;
 
 $themeManager = $container->get(
     \Keystone\Core\Theme\ThemeManagerInterface::class
@@ -31,6 +35,12 @@ $twig->getEnvironment()->addGlobal(
     $container->get(\Keystone\Domain\User\CurrentUser::class)
 );
 
+
+
+$botGuard = new BotGuard('default_protector');
+$botGuard->markFormRendered();
+
+$twig->getEnvironment()->addGlobal('botguard', $botGuard);
 $twig->getEnvironment()->addGlobal('url', $_ENV['APP_URL'] ?? 'http://localhost');
 $twig->getEnvironment()->addGlobal('sitename', $_ENV['SITENAME'] ?? 'KeyStone');
 $twig->getEnvironment()->addGlobal('base_path', $app->getBasePath());

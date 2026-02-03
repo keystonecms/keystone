@@ -18,6 +18,8 @@ use Keystone\Core\Security\SecurityEventService;
 use Keystone\Core\Auth\AuthService;
 use Keystone\Auth\Event\UserLoggedIn;
 use Keystone\Security\LoginAudit\LoginAuditService;
+use Keystone\Core\Security\BotGuard;
+use Keystone\Infrastructure\Urls;
 
 final class LoginController extends BaseController {
 
@@ -30,12 +32,17 @@ final class LoginController extends BaseController {
         private TwoFactorHandlerInterface $twoFactor,
         private AuthorityActivityService $authority,
         private SecurityEventService $security,
-        private LoginAuditService $loginAudit
+        private LoginAuditService $loginAudit,
+        private Urls $urls
     ) {}
 
     public function show(ServerRequestInterface $request): ResponseInterface {
     
     $queryParams = $request->getQueryParams();
+
+    $botGuard = new BotGuard('login');
+    $botGuard->markFormRendered();
+
 
         return $this->view->render(
             $this->responseFactory->createResponse(),
@@ -58,6 +65,18 @@ $data = (array) $request->getParsedBody();
             'email' => $data['email'],
             'ip' => $ip,
         ]);
+    try {
+    $botGuard = new BotGuard('login', $logger);
+    $botGuard->validate($data); 
+    } catch (\RuntimeException $e) {
+
+            return $this->json($response, [
+            'status'  => 'error',
+            'message' => $e->getMessage(),
+        ], 401); 
+    }
+
+    $botGuard->reset();
 
     try {
         $user = $this->users->authenticate(
@@ -83,7 +102,7 @@ if ($this->twoFactor->requiresTwoFactor($user)) {
     return $this->json($response, [
         'status'   => 'success',
         'message'  => 'Tweestapsverificatie vereist',
-        'redirect' => '/2fa?token=' . $challengeToken,
+        'redirect' => $this->urls->baseUrl() . '/2fa?token=' . $challengeToken,
     ]);
 }
 
@@ -109,7 +128,7 @@ if ($this->twoFactor->requiresTwoFactor($user)) {
         return $this->json($response, [
             'status'   => 'success',
             'message'  => 'Succesvol ingelogd',
-            'redirect' => '/admin/dashboard',
+            'redirect' => $this->urls->baseUrl() . '/admin/dashboard',
         ]);
 
     } catch (\RuntimeException $e) {

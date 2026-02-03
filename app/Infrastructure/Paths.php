@@ -45,6 +45,12 @@ final class Paths {
         return $this->basePath . '/../public_html/uploads';
     }
 
+    public function pluginDevRoots(): array {
+        return [
+            realpath(__DIR__ . '/../../keystone-plugins'),
+        ];
+    }
+
     public function plugins(): string {
         return $this->basePath . '/plugins';
     }

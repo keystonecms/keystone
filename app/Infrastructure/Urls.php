@@ -30,8 +30,11 @@ final class Urls {
 public function __construct()  {}
 
 public function updateLatest() {
-    return 'https://github.com/keystonecms/keystone/releases/latest/download/latest.json';
+        return 'https://github.com/keystonecms/keystone/releases/latest/download/latest.json';
     }
 
+    public function baseUrl() {
+        return $_ENV['APP_URL'];
+    }
 }
 ?>
